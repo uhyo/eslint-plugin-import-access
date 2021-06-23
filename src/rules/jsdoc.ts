@@ -1,7 +1,8 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
-import { canHaveJsDoc, getJsDoc } from "tsutils";
-import { Symbol, SyntaxKind, TypeChecker } from "typescript";
+import { Node, Symbol, SyntaxKind, TypeChecker } from "typescript";
+import { assertNever } from "../utils/assertNever";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
+import { isInPackage } from "../utils/isInPackage";
 
 type MessageId = "package" | "private";
 
@@ -20,7 +21,7 @@ const jsdocRule: Omit<
       url: "TODO",
     },
     messages: {
-      package: "",
+      package: "Cannot import a package-private export '{{ identifier }}'",
       private: "Cannot import a private export '{{ identifier }}'",
     },
     schema: [{}],
@@ -36,9 +37,8 @@ const jsdocRule: Omit<
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
         const symbol = checker.getSymbolAtLocation(tsNode.name);
-        // console.log(symbol);
         if (symbol) {
-          checkSymbol(context, checker, node, symbol);
+          checkSymbol(context, checker, node, tsNode, symbol);
         }
       },
     };
@@ -51,6 +51,7 @@ function checkSymbol(
   context: Readonly<TSESLint.RuleContext<MessageId, unknown[]>>,
   checker: TypeChecker,
   originalNode: TSESTree.Node,
+  tsNode: Node,
   symbol: Symbol
 ) {
   const exsy = checker.getAliasedSymbol(symbol);
@@ -63,7 +64,7 @@ function checkSymbol(
     return;
   }
   // found an export declaration
-  const jsDocs = canHaveJsDoc(decl) && getJsDoc(decl);
+  const jsDocs = exsy.getJsDocTags();
   if (!jsDocs) {
     return;
   }
@@ -83,6 +84,21 @@ function checkSymbol(
     });
     return;
   }
-  // look for packages
-  console.log(symbol.name, getAccessOfJsDocs(jsDocs));
+  if (access !== "package") {
+    assertNever(access);
+  }
+  // for package-exports, check relation of this and that files
+  const inPackage = isInPackage(
+    tsNode.getSourceFile().fileName,
+    decl.getSourceFile().fileName
+  );
+  if (!inPackage) {
+    context.report({
+      node: originalNode,
+      messageId: "package",
+      data: {
+        identifier: exsy.name,
+      },
+    });
+  }
 }
