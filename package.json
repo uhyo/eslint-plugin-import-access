@@ -1,0 +1,46 @@
+{
+  "name": "eslint-plugin-import-access",
+  "version": "1.0.0",
+  "description": "ESLint rules for prohibiting package-private imports",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin"
+  ],
+  "author": "uhyo <uhyo@uhy.ooo>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uhyo/eslint-plugin-var-length"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@typescript-eslint/experimental-utils": "^4.28.0",
+    "@typescript-eslint/typescript-estree": "^4.28.0",
+    "memoize-one": "^5.2.1",
+    "tsutils": "^3.21.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-typescript": "^7.14.5",
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "babel-jest": "^27.0.5",
+    "eslint": "^7.29.0",
+    "eslint-plugin-local-rules": "^1.1.0",
+    "espree": "^7.3.1",
+    "jest": "^27.0.5",
+    "prettier": "^2.3.1",
+    "typescript": "^4.3.4"
+  }
+}
