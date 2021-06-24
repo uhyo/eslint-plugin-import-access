@@ -51,10 +51,11 @@ class ESLintTester {
   }
 }
 
+let cache: ESLintTester | undefined;
 /**
  * get an ESLint instance for testing.
  */
 export function getESLintTester(): ESLintTester {
   const projectRoot = path.resolve(__dirname, "project");
-  return new ESLintTester(projectRoot);
+  return (cache ||= new ESLintTester(projectRoot));
 }
