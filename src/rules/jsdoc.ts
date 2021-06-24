@@ -106,7 +106,6 @@ function checkSymbol(
     decl.getSourceFile().fileName
   );
   if (!inPackage) {
-    console.log(exsy);
     context.report({
       node: originalNode,
       messageId: "package",

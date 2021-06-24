@@ -33,6 +33,17 @@ Array [
     "ruleId": "import-access/jsdoc",
     "severity": 2,
   },
+  Object {
+    "column": 40,
+    "endColumn": 61,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot import a package-private export 'barPackage'",
+    "messageId": "package",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
 ]
 `);
   });
