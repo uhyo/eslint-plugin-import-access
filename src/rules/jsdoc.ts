@@ -1,7 +1,10 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
 import { Node, Symbol, SyntaxKind, TypeChecker } from "typescript";
 import { assertNever } from "../utils/assertNever";
+import { concatArrays } from "../utils/concatArrays";
+import { findExportableDeclaration } from "../utils/findExportableDeclaration";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
+import { getJSDocTags, Tag } from "../utils/getJSDocTags";
 import { isInPackage } from "../utils/isInPackage";
 
 type MessageId = "package" | "private";
@@ -68,7 +71,11 @@ function checkSymbol(
   symbol: Symbol
 ) {
   const exsy = checker.getAliasedSymbol(symbol);
-  const decl = exsy.declarations?.[0];
+  const rawDecl = exsy.declarations?.[0];
+  if (!rawDecl) {
+    return;
+  }
+  const decl = findExportableDeclaration(rawDecl);
   if (!decl) {
     return;
   }
@@ -77,7 +84,16 @@ function checkSymbol(
     return;
   }
   // found an export declaration
-  const jsDocs = exsy.getJsDocTags();
+  const jsDocs = concatArrays<Tag>(
+    exsy.getJsDocTags(checker).map((tag) => ({
+      name: tag.name,
+      text: tag.text?.[0].text || "",
+    })),
+    getJSDocTags(decl)
+  );
+  if (exsy.name === "barDestructed") {
+    console.log(exsy.name, jsDocs);
+  }
   if (!jsDocs) {
     return;
   }
