@@ -2,7 +2,9 @@ import {
   isClassDeclaration,
   isExportDeclaration,
   isFunctionDeclaration,
+  isInterfaceDeclaration,
   isSourceFile,
+  isTypeAliasDeclaration,
   isVariableStatement,
   Node,
   SyntaxKind,
@@ -33,7 +35,9 @@ function findExportableDeclaration(node: Node) {
       isFunctionDeclaration(node) ||
       isClassDeclaration(node) ||
       isVariableStatement(node) ||
-      isExportDeclaration(node)
+      isExportDeclaration(node) ||
+      isTypeAliasDeclaration(node) ||
+      isInterfaceDeclaration(node)
     ) {
       return node;
     }

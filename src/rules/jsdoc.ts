@@ -90,9 +90,6 @@ function checkSymbol(
     })),
     getJSDocTags(decl)
   );
-  if (exsy.name === "barDestructed") {
-    console.log(exsy.name, jsDocs);
-  }
   if (!jsDocs) {
     return;
   }
