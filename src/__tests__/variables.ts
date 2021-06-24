@@ -23,8 +23,8 @@ Array [
     "severity": 2,
   },
   Object {
-    "column": 41,
-    "endColumn": 49,
+    "column": 25,
+    "endColumn": 33,
     "endLine": 1,
     "line": 1,
     "message": "Cannot import a package-private export 'barValue'",
@@ -34,8 +34,8 @@ Array [
     "severity": 2,
   },
   Object {
-    "column": 51,
-    "endColumn": 60,
+    "column": 35,
+    "endColumn": 44,
     "endLine": 1,
     "line": 1,
     "message": "Cannot import a package-private export 'barValue2'",
