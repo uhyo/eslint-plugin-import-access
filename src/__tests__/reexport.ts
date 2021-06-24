@@ -21,4 +21,26 @@ Array [
 ]
 `);
   });
+  it("Can import a re-exported value (export from)", async () => {
+    const result = await tester.lintFile("src/reexport/useBar.ts");
+    expect(result).toEqual([]);
+  });
+  it("Can import a re-exported private variable (export from)", async () => {
+    const result = await tester.lintFile("src/reexport/useBaz.ts");
+    expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot import a private export 'subBaz'",
+    "messageId": "private",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+  });
 });

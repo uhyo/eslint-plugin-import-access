@@ -1,0 +1,1 @@
+export { subBar } from "./bar";
