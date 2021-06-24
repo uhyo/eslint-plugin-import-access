@@ -33,6 +33,7 @@ const jsdocRule: Omit<
         if (!parserServices) {
           return;
         }
+
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
