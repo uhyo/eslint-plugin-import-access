@@ -27,16 +27,28 @@ const jsdocRule: Omit<
     schema: [{}],
   },
   create(context) {
+    const { parserServices } = context;
+    if (!parserServices) {
+      return {};
+    }
+
     return {
       ImportSpecifier(node) {
-        const { parserServices } = context;
-        if (!parserServices) {
-          return;
-        }
-
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        const symbol = checker.getSymbolAtLocation(tsNode.name);
+        if (symbol) {
+          checkSymbol(context, checker, node, tsNode, symbol);
+        }
+      },
+      ImportDefaultSpecifier(node) {
+        const checker = parserServices.program.getTypeChecker();
+
+        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        if (!tsNode.name) {
+          return;
+        }
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
           checkSymbol(context, checker, node, tsNode, symbol);
@@ -94,6 +106,7 @@ function checkSymbol(
     decl.getSourceFile().fileName
   );
   if (!inPackage) {
+    console.log(exsy);
     context.report({
       node: originalNode,
       messageId: "package",

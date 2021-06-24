@@ -8,9 +8,10 @@
   ],
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
+    "build:watch": "tsc --watch",
     "lint": "eslint src/**/*.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "eslint",

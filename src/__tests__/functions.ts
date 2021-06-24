@@ -36,4 +36,22 @@ Array [
 ]
 `);
   });
+  it("Cannot default-import package-private function", async () => {
+    const result = await tester.lintFile("src/function/bazUser.ts");
+    expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 8,
+    "endColumn": 18,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot import a package-private export 'default'",
+    "messageId": "package",
+    "nodeType": "ImportDefaultSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+  });
 });
