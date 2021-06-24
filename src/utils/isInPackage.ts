@@ -1,7 +1,7 @@
 import path from "path";
 
 // ../ or ../../ or ...
-const ancestorDirRegExp = new RegExp(`^(?:\\.\\.\\${path.sep})*$`);
+const ancestorDirRegExp = new RegExp(`^(?:\\.\\.\\${path.sep})*(?:\\.\\.)?$`);
 
 const indexFileRegExp = new RegExp(`\\${path.sep}index\\.tsx?$`);
 

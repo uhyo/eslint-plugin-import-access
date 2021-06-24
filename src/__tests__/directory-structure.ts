@@ -29,4 +29,10 @@ Array [
     );
     expect(result).toEqual([]);
   });
+  it("Can import from ../pkg", async () => {
+    const result = await tester.lintFile(
+      "src/directory-structure/sub/sub2/parentUser.ts"
+    );
+    expect(result).toEqual([]);
+  });
 });
