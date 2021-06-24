@@ -3,7 +3,7 @@ import * as parser from "@typescript-eslint/parser";
 import { readFile } from "fs/promises";
 import path from "path";
 import { Program } from "typescript";
-import jsdocRule from "../../rules/jsdoc";
+import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
 class ESLintTester {
   #projectRoot: string;
@@ -23,7 +23,10 @@ class ESLintTester {
   /**
    * Lint file in the project (relative to project root).
    */
-  async lintFile(filePath: string) {
+  async lintFile(
+    filePath: string,
+    rules?: Partial<{ jsdoc: Partial<JSDocRuleOptions> }>
+  ) {
     const fileAbsolutePath = path.join(this.#projectRoot, filePath);
     const code = await readFile(fileAbsolutePath, {
       encoding: "utf8",
@@ -41,7 +44,7 @@ class ESLintTester {
           program: this.#program,
         },
         rules: {
-          "import-access/jsdoc": ["error", {}],
+          "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
         },
       },
       {

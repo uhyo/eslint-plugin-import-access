@@ -4,7 +4,6 @@ export type JSDocAccess = "public" | "package" | "private";
 
 /**
  * Get access for given JSDoc.
- * @access package
  */
 export function getAccessOfJsDocs(tags: readonly Tag[]): JSDocAccess {
   for (const tag of tags) {

@@ -6,14 +6,23 @@ import { findExportedDeclaration } from "../utils/findExportableDeclaration";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
 import { getJSDocTags, Tag } from "../utils/getJSDocTags";
-import { isInPackage } from "../utils/isInPackage";
+import { isInPackage, PackageOptions } from "../utils/isInPackage";
 
 type MessageId = "package" | "private";
 
-type RuleOptions = {};
+export type JSDocRuleOptions = {
+  /**
+   * Whether importing a package-private exports from `index.ts` in a subdirectory.
+   */
+  indexLoophole: boolean;
+  /**
+   * Whether importing a package-private exports in a directory from a file of same name.
+   */
+  filenameLoophole: boolean;
+};
 
 const jsdocRule: Omit<
-  TSESLint.RuleModule<MessageId, [Partial<RuleOptions>?]>,
+  TSESLint.RuleModule<MessageId, [Partial<JSDocRuleOptions>?]>,
   "docs"
 > = {
   meta: {
@@ -28,13 +37,29 @@ const jsdocRule: Omit<
       package: "Cannot import a package-private export '{{ identifier }}'",
       private: "Cannot import a private export '{{ identifier }}'",
     },
-    schema: [{}],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          indexLoophole: {
+            type: "boolean",
+          },
+          filenameLoophole: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
   create(context) {
-    const { parserServices } = context;
+    const { parserServices, options } = context;
     if (!parserServices) {
       return {};
     }
+    const [{ indexLoophole = true, filenameLoophole = false } = {}] = options;
+
+    const packageOptions: PackageOptions = { indexLoophole, filenameLoophole };
 
     return {
       ImportSpecifier(node) {
@@ -44,7 +69,7 @@ const jsdocRule: Omit<
 
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
-          checkSymbol(context, checker, node, tsNode, symbol);
+          checkSymbol(context, packageOptions, checker, node, tsNode, symbol);
         }
       },
       ImportDefaultSpecifier(node) {
@@ -56,7 +81,7 @@ const jsdocRule: Omit<
         }
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
-          checkSymbol(context, checker, node, tsNode, symbol);
+          checkSymbol(context, packageOptions, checker, node, tsNode, symbol);
         }
       },
     };
@@ -67,6 +92,7 @@ export default jsdocRule;
 
 function checkSymbol(
   context: Readonly<TSESLint.RuleContext<MessageId, unknown[]>>,
+  packageOptions: PackageOptions,
   checker: TypeChecker,
   originalNode: TSESTree.Node,
   tsNode: Node,
@@ -115,7 +141,8 @@ function checkSymbol(
   // for package-exports, check relation of this and that files
   const inPackage = isInPackage(
     tsNode.getSourceFile().fileName,
-    decl.getSourceFile().fileName
+    decl.getSourceFile().fileName,
+    packageOptions
   );
   if (!inPackage) {
     context.report({
