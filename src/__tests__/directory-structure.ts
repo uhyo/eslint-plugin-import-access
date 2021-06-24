@@ -35,4 +35,24 @@ Array [
     );
     expect(result).toEqual([]);
   });
+  it("Cannot import from sibling sub-package", async () => {
+    const result = await tester.lintFile(
+      "src/directory-structure/sub/sub3/siblingUser.ts"
+    );
+    expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 19,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot import a package-private export 'subsubVar'",
+    "messageId": "package",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+  });
 });
