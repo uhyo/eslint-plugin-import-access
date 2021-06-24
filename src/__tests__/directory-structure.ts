@@ -3,7 +3,7 @@ import { getESLintTester } from "./fixtures/eslint";
 const tester = getESLintTester();
 
 describe("directory structure", () => {
-  it("Canonot import from subsub directory", async () => {
+  it("Canot import from subsub directory", async () => {
     const result = await tester.lintFile(
       "src/directory-structure/subsubUser.ts"
     );

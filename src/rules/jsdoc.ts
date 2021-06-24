@@ -1,9 +1,10 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
-import { Node, Symbol, SyntaxKind, TypeChecker } from "typescript";
+import { Declaration, Node, Symbol, TypeChecker } from "typescript";
 import { assertNever } from "../utils/assertNever";
 import { concatArrays } from "../utils/concatArrays";
-import { findExportableDeclaration } from "../utils/findExportableDeclaration";
+import { findExportedDeclaration } from "../utils/findExportableDeclaration";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
+import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
 import { getJSDocTags, Tag } from "../utils/getJSDocTags";
 import { isInPackage } from "../utils/isInPackage";
 
@@ -40,6 +41,7 @@ const jsdocRule: Omit<
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
           checkSymbol(context, checker, node, tsNode, symbol);
@@ -70,19 +72,16 @@ function checkSymbol(
   tsNode: Node,
   symbol: Symbol
 ) {
-  const exsy = checker.getAliasedSymbol(symbol);
-  const rawDecl = exsy.declarations?.[0];
-  if (!rawDecl) {
+  const declTuple = findDeclaredSymbolAlias(checker, symbol);
+  if (!declTuple) {
     return;
   }
-  const decl = findExportableDeclaration(rawDecl);
+  const [exsy, rawDecl] = declTuple;
+  const decl = findExportedDeclaration(rawDecl);
   if (!decl) {
     return;
   }
 
-  if (!decl.modifiers?.find((m) => m.kind === SyntaxKind.ExportKeyword)) {
-    return;
-  }
   // found an export declaration
   const jsDocs = concatArrays<Tag>(
     exsy.getJsDocTags(checker).map((tag) => ({
@@ -130,4 +129,21 @@ function checkSymbol(
       },
     });
   }
+}
+
+function findDeclaredSymbolAlias(
+  checker: TypeChecker,
+  symbol: Symbol
+): [symb: Symbol, decl: Declaration] | undefined {
+  let s: Symbol | undefined = symbol;
+
+  do {
+    s = getImmediateAliasedSymbol(checker, s);
+    if (s) {
+      const decl = s.declarations?.[0];
+      if (decl) {
+        return [s, decl];
+      }
+    }
+  } while (s);
 }
