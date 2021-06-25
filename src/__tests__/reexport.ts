@@ -78,4 +78,29 @@ Array [
 `);
     });
   });
+  describe("filenameLoophole = true", () => {
+    it("Can import from sub directory of same name", async () => {
+      const result = await tester.lintFile("src/reexport2/sub.ts", {
+        jsdoc: {
+          indexLoophole: false,
+          filenameLoophole: true,
+        },
+      });
+      expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 2,
+    "line": 2,
+    "message": "Cannot import a package-private export 'subBar'",
+    "messageId": "package",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+    });
+  });
 });
