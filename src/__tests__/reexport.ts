@@ -53,6 +53,17 @@ Array [
       expect(result).toMatchInlineSnapshot(`
 Array [
   Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot import a package-private export 'subFoo'",
+    "messageId": "package",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+  Object {
     "column": 18,
     "endColumn": 31,
     "endLine": 1,
