@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12, 14, 16]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -20,8 +23,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: 14
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build
       - run: npm run lint
