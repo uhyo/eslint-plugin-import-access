@@ -1,12 +1,8 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
-import { Declaration, Node, Symbol, TypeChecker } from "typescript";
-import { assertNever } from "../utils/assertNever";
-import { concatArrays } from "../utils/concatArrays";
-import { findExportedDeclaration } from "../utils/findExportableDeclaration";
-import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
+import { Node, Symbol, TypeChecker } from "typescript";
+import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
-import { getJSDocTags, Tag } from "../utils/getJSDocTags";
-import { isInPackage, PackageOptions } from "../utils/isInPackage";
+import { PackageOptions } from "../utils/isInPackage";
 
 type MessageId = "package" | "private";
 
@@ -98,76 +94,36 @@ function checkSymbol(
   tsNode: Node,
   symbol: Symbol
 ) {
-  const declTuple = findDeclaredSymbolAlias(checker, symbol);
-  if (!declTuple) {
+  const exsy = getImmediateAliasedSymbol(checker, symbol);
+  if (!exsy) {
     return;
   }
-  const [exsy, rawDecl] = declTuple;
-  const decl = findExportedDeclaration(rawDecl);
-  if (!decl) {
-    return;
-  }
-
-  // found an export declaration
-  const jsDocs = concatArrays<Tag>(
-    exsy.getJsDocTags(checker).map((tag) => ({
-      name: tag.name,
-      text: tag.text?.[0].text || "",
-    })),
-    getJSDocTags(decl)
-  );
-  if (!jsDocs) {
-    return;
-  }
-  const access = getAccessOfJsDocs(jsDocs);
-  if (access === "public") {
-    // no restriction
-    return;
-  }
-  if (access === "private") {
-    // no import of private stuff! (why is this exported?)
-    context.report({
-      node: originalNode,
-      messageId: "private",
-      data: {
-        identifier: exsy.name,
-      },
-    });
-    return;
-  }
-  if (access !== "package") {
-    assertNever(access);
-  }
-  // for package-exports, check relation of this and that files
-  const inPackage = isInPackage(
+  const checkResult = checkSymbolImportability(
+    packageOptions,
+    checker,
     tsNode.getSourceFile().fileName,
-    decl.getSourceFile().fileName,
-    packageOptions
+    exsy
   );
-  if (!inPackage) {
-    context.report({
-      node: originalNode,
-      messageId: "package",
-      data: {
-        identifier: exsy.name,
-      },
-    });
-  }
-}
-
-function findDeclaredSymbolAlias(
-  checker: TypeChecker,
-  symbol: Symbol
-): [symb: Symbol, decl: Declaration] | undefined {
-  let s: Symbol | undefined = symbol;
-
-  do {
-    s = getImmediateAliasedSymbol(checker, s);
-    if (s) {
-      const decl = s.declarations?.[0];
-      if (decl) {
-        return [s, decl];
-      }
+  switch (checkResult) {
+    case "package": {
+      context.report({
+        node: originalNode,
+        messageId: "package",
+        data: {
+          identifier: exsy.name,
+        },
+      });
+      break;
     }
-  } while (s);
+    case "private": {
+      context.report({
+        node: originalNode,
+        messageId: "private",
+        data: {
+          identifier: exsy.name,
+        },
+      });
+      break;
+    }
+  }
 }

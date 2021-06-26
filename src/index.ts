@@ -1,8 +1,9 @@
 import jsdoc from "./rules/jsdoc";
+import { tsServerPluginInit } from "./ts-server-plugin";
 
-export = {
+export = Object.assign(tsServerPluginInit, {
   rules: {
-    jsdoc
+    jsdoc,
   },
   configs: {
     all: {
@@ -12,4 +13,4 @@ export = {
       },
     },
   },
-};
+});
