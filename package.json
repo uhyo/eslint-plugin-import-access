@@ -1,10 +1,11 @@
 {
   "name": "eslint-plugin-import-access",
-  "version": "1.0.0",
-  "description": "ESLint rules for prohibiting package-private imports",
+  "version": "1.0.0-beta",
+  "description": "ESLint rule for prohibiting package-private imports",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "!dist/__tests__"
   ],
   "scripts": {
     "build": "tsc",
@@ -26,7 +27,6 @@
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^4.28.0",
     "@typescript-eslint/typescript-estree": "^4.28.0",
-    "memoize-one": "^5.2.1",
     "tsutils": "^3.21.0"
   },
   "devDependencies": {
