@@ -46,6 +46,8 @@ In **tsconfig.json**:
 }
 ```
 
+_Note: to enable TypeScript server plugins installed locally, you must use TypeScript in `node_modules`, not the one bundled with VSCode._
+
 ## Rule References
 
 - [import-access/jsdoc](./docs/rule-jsdoc.md)
