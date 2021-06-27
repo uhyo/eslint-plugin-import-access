@@ -53,7 +53,9 @@ const jsdocRule: Omit<
     if (!parserServices) {
       return {};
     }
-    const [{ indexLoophole = true, filenameLoophole = false } = {}] = options;
+    const { indexLoophole, filenameLoophole } = jsDocRuleDefaultOptions(
+      options[0]
+    );
 
     const packageOptions: PackageOptions = { indexLoophole, filenameLoophole };
 
@@ -85,6 +87,13 @@ const jsdocRule: Omit<
 };
 
 export default jsdocRule;
+
+export function jsDocRuleDefaultOptions(
+  options: Partial<JSDocRuleOptions> | undefined
+): JSDocRuleOptions {
+  const { indexLoophole = true, filenameLoophole = false } = options || {};
+  return { indexLoophole, filenameLoophole };
+}
 
 function checkSymbol(
   context: Readonly<TSESLint.RuleContext<MessageId, unknown[]>>,

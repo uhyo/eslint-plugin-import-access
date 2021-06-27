@@ -1,5 +1,10 @@
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
+import { jsDocRuleDefaultOptions, JSDocRuleOptions } from "../rules/jsdoc";
 import { PackageOptions } from "../utils/isInPackage";
+
+type PluginConfig = {
+  jsdoc?: Partial<JSDocRuleOptions>;
+};
 
 export function tsServerPluginInit(modules: {
   typescript: typeof import("typescript/lib/tsserverlibrary");
@@ -12,10 +17,11 @@ export function tsServerPluginInit(modules: {
     //   fs.appendFileSync(logFile, `[${new Date()}] ${message}\n`);
     // };
 
-    const packageOptions: PackageOptions = {
-      indexLoophole: true,
-      filenameLoophole: false,
-    };
+    const config: PluginConfig = info.config;
+
+    const packageOptions: PackageOptions = jsDocRuleDefaultOptions(
+      config.jsdoc
+    );
 
     // Set up decorator
     const proxy: ts.LanguageService = Object.create(null);
