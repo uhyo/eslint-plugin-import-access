@@ -2,7 +2,7 @@
 
 ## What?
 
-This package provides a [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) rule that restricts importing variables marked as `@package` from a file outside the same directory. Also, this package serves as a TypeScript Server Plugin that prevents auto-completion of such imports.
+This package provides a [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) rule that restricts importing variables marked as `@package` from a file outside the same directory. Also, this package serves as a TypeScript Language Service Plugin that prevents auto-completion of such imports.
 
 ## Why?
 
@@ -46,11 +46,13 @@ In **tsconfig.json**:
 }
 ```
 
-_Note: to enable TypeScript server plugins installed locally, you must use TypeScript in `node_modules`, not the one bundled with VSCode._
+_Note: to enable TypeScript language service plugins installed locally, you must use TypeScript in `node_modules`, not the one bundled with VSCode._
 
 ## Rule References
 
 - [import-access/jsdoc](./docs/rule-jsdoc.md)
+
+- [Language Service Plugin](./docs/ts-server.md)
 
 ## Contributing
 
