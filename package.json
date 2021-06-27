@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "ESLint rules for prohibiting package-private imports",
   "main": "dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./ts-server-plugin": "./dist/ts-server-plugin/index.js"
-  },
   "files": [
     "dist"
   ],
