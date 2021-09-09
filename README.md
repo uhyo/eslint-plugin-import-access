@@ -48,6 +48,26 @@ In **tsconfig.json**:
 
 _Note: to enable TypeScript language service plugins installed locally, you must use TypeScript in `node_modules`, not the one bundled with VSCode._
 
+## Example
+
+```ts
+// ----- sub/foo.ts -----
+
+/**
+ * @package
+ */
+export const fooPackageVariable = "I am package-private export";
+
+// ----- sub/bar.ts -----
+// This is correct because foo.ts is in the same directory
+import { fooPackageVariable } from "./foo";
+
+// ----- baz.ts -----
+// This is INCORRECT because package-private exports
+// cannot be imported from outside the sub directory
+import { fooPackageVariable } from "./sub/foo";
+```
+
 ## Rule References
 
 - [import-access/jsdoc](./docs/rule-jsdoc.md)

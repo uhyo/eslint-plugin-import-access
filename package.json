@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-import-access",
-  "version": "1.0.0-beta",
+  "version": "1.0.0",
   "description": "ESLint rule for prohibiting package-private imports",
   "main": "dist/index.js",
   "files": [
@@ -21,7 +21,7 @@
   "author": "uhyo <uhyo@uhy.ooo>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uhyo/eslint-plugin-var-length"
+    "url": "https://github.com/uhyo/eslint-plugin-import-access"
   },
   "license": "MIT",
   "dependencies": {
