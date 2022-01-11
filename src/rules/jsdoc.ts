@@ -24,7 +24,6 @@ const jsdocRule: Omit<
   meta: {
     type: "problem",
     docs: {
-      category: "Possible Errors",
       description: "Prohibit importing private exports.",
       recommended: "error",
       url: "TODO",
