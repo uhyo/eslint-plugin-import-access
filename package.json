@@ -25,8 +25,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@typescript-eslint/experimental-utils": "^4.28.0",
-    "@typescript-eslint/typescript-estree": "^4.28.0",
+    "@typescript-eslint/experimental-utils": "^5.9.1",
+    "@typescript-eslint/typescript-estree": "^5.9.1",
     "tsutils": "^3.21.0"
   },
   "devDependencies": {
@@ -34,8 +34,8 @@
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
     "@types/jest": "^26.0.23",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
     "babel-jest": "^27.0.5",
     "eslint": "^7.29.0",
     "eslint-plugin-local-rules": "^1.1.0",
