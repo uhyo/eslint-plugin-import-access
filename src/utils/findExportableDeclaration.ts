@@ -1,5 +1,6 @@
 import {
   isClassDeclaration,
+  isExportAssignment,
   isExportDeclaration,
   isFunctionDeclaration,
   isInterfaceDeclaration,
@@ -19,7 +20,7 @@ export function findExportedDeclaration(node: Node) {
     return;
   }
 
-  if (isExportDeclaration(decl)) {
+  if (isExportDeclaration(decl) || isExportAssignment(decl)) {
     return decl;
   }
 
@@ -36,6 +37,7 @@ function findExportableDeclaration(node: Node) {
       isClassDeclaration(node) ||
       isVariableStatement(node) ||
       isExportDeclaration(node) ||
+      isExportAssignment(node) ||
       isTypeAliasDeclaration(node) ||
       isInterfaceDeclaration(node)
     ) {
