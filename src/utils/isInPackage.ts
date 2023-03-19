@@ -8,7 +8,7 @@ export type PackageOptions = {
 // ../ or ../../ or ...
 const ancestorDirRegExp = new RegExp(`^(?:\\.\\.\\${path.sep})*(?:\\.\\.)?$`);
 
-const indexFileRegExp = new RegExp(`\\${path.sep}index\\.tsx?$`);
+const indexFileRegExp = new RegExp(`\\${path.sep}index\\.[cm]?[jt]sx?$`);
 
 /**
  * Checks whether importer is in the same 'package' as exporter.
