@@ -12,7 +12,8 @@ As a bonus feature, importing exports annotated with `@private` is always forbid
   "rules": {
     "import-access/jsdoc": ["error", {
       "indexLoophole": true,
-      "filenameLoophole": false
+      "filenameLoophole": false,
+      "defaultImportability": "public" // "public" | "package" | "private"
     }],
   }
 ```
@@ -45,6 +46,7 @@ The `import-access/jsdoc` rule has following options and default values:
 type JSDocRuleOptions = {
   indexLoophole: boolean;
   filenameLoophole: boolean;
+  defaultImportability: "public" | "pacakge" | "private";
 };
 ```
 
@@ -98,4 +100,27 @@ import { pika } from "./sub/foo";
 // This is still INCORRECT because file name does not match
 // the directory name
 import { pika } from "./sub/foo";
+```
+
+### `defaultImportability`
+
+_Default value: `public`_
+
+You can set default importability value for apply entire your project.
+
+**Example:**
+
+```ts
+// defaultImportability: "package"
+// ----- sub/bar.ts
+
+export const pika = "chu"; // no JSDoc, but automatically applied @package
+
+// ----- sub/foo.ts
+// you can import 
+import { pika } from "./bar";
+
+// ----- bar2.ts
+// you cannot import because pika is @package 
+import { pika } from "./sub/bar`;
 ```
