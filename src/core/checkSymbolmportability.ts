@@ -51,7 +51,7 @@ export function checkSymbolImportability(
       }
     }
   }
-  const access = getAccessOfJsDocs(jsDocs);
+  const access = getAccessOfJsDocs(jsDocs, packageOptions.defaultImportability);
   if (access === "public") {
     // no restriction
     return;

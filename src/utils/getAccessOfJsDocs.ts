@@ -5,7 +5,10 @@ export type JSDocAccess = "public" | "package" | "private";
 /**
  * Get access for given JSDoc.
  */
-export function getAccessOfJsDocs(tags: readonly Tag[]): JSDocAccess {
+export function getAccessOfJsDocs(
+  tags: readonly Tag[],
+  defaultImportability: JSDocAccess
+): JSDocAccess {
   for (const tag of tags) {
     const tagName = tag.name;
     if (tagName === "package") {
@@ -15,6 +18,10 @@ export function getAccessOfJsDocs(tags: readonly Tag[]): JSDocAccess {
     if (tagName === "private") {
       // @private
       return "private";
+    }
+    if (tagName === "public") {
+      // @public
+      return "public";
     }
     if (tagName === "access") {
       // @access
@@ -27,7 +34,11 @@ export function getAccessOfJsDocs(tags: readonly Tag[]): JSDocAccess {
         // @access private
         return "private";
       }
+      if (text === "public") {
+        // @access public
+        return "public";
+      }
     }
   }
-  return "public";
+  return defaultImportability;
 }
