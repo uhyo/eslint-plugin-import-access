@@ -3,8 +3,8 @@ import { assertNever } from "../utils/assertNever";
 import { concatArrays } from "../utils/concatArrays";
 import { findExportedDeclaration } from "../utils/findExportableDeclaration";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
-import { getJSDocTags, Tag } from "../utils/getJSDocTags";
-import { isInPackage, PackageOptions } from "../utils/isInPackage";
+import { Tag, getJSDocTags } from "../utils/getJSDocTags";
+import { PackageOptions, isInPackage } from "../utils/isInPackage";
 
 /**
  * Result of checking a symbol.
@@ -36,7 +36,20 @@ export function checkSymbolImportability(
     getJSDocTags(decl)
   );
   if (!jsDocs) {
-    return;
+    switch (packageOptions.defaultImportability) {
+      case "public":
+        return;
+      case "private":
+        return "private";
+      case "package": {
+        const inPackage = isInPackage(
+          importerFilename,
+          decl.getSourceFile().fileName,
+          packageOptions
+        );
+        return inPackage ? undefined : "package";
+      }
+    }
   }
   const access = getAccessOfJsDocs(jsDocs);
   if (access === "public") {

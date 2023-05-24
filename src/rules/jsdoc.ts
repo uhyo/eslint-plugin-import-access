@@ -15,6 +15,10 @@ export type JSDocRuleOptions = {
    * Whether importing a package-private exports in a directory from a file of same name.
    */
   filenameLoophole: boolean;
+  /**
+   * Whether packages importability is restricted to public exports only or not.
+   */
+  defaultImportability: "public" | "package" | "private";
 };
 
 const jsdocRule: Omit<
@@ -42,6 +46,10 @@ const jsdocRule: Omit<
           filenameLoophole: {
             type: "boolean",
           },
+          defaultImportability: {
+            type: "string",
+            enum: ["public", "package", "private"],
+          },
         },
         additionalProperties: false,
       },
@@ -52,11 +60,14 @@ const jsdocRule: Omit<
     if (!parserServices) {
       return {};
     }
-    const { indexLoophole, filenameLoophole } = jsDocRuleDefaultOptions(
-      options[0]
-    );
+    const { indexLoophole, filenameLoophole, defaultImportability } =
+      jsDocRuleDefaultOptions(options[0]);
 
-    const packageOptions: PackageOptions = { indexLoophole, filenameLoophole };
+    const packageOptions: PackageOptions = {
+      indexLoophole,
+      filenameLoophole,
+      defaultImportability,
+    };
 
     return {
       ImportSpecifier(node) {
@@ -90,8 +101,12 @@ export default jsdocRule;
 export function jsDocRuleDefaultOptions(
   options: Partial<JSDocRuleOptions> | undefined
 ): JSDocRuleOptions {
-  const { indexLoophole = true, filenameLoophole = false } = options || {};
-  return { indexLoophole, filenameLoophole };
+  const {
+    indexLoophole = true,
+    filenameLoophole = false,
+    defaultImportability = "public",
+  } = options || {};
+  return { indexLoophole, filenameLoophole, defaultImportability };
 }
 
 function checkSymbol(
