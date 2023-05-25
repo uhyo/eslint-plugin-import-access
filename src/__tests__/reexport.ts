@@ -103,4 +103,28 @@ Array [
 `);
     });
   });
+  describe("defaultImportability=package", () => {
+    it("Cannot import no JSDocs from sub directory", async () => {
+      const result = await tester.lintFile("src/reexport3/sub.ts", {
+        jsdoc: {
+          defaultImportability: "package",
+        },
+      });
+      expect(result).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 16,
+            "endLine": 2,
+            "line": 2,
+            "message": "Cannot import a package-private export 'subBar'",
+            "messageId": "package",
+            "nodeType": "ImportSpecifier",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
+    });
+  });
 });

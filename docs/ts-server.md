@@ -28,7 +28,8 @@ In addition, options can be provided to the plugin:
         "name": "eslint-plugin-import-access",
         "jsdoc": {
           "indexLoophole": false,
-          "filenameLoophole": true
+          "filenameLoophole": true,
+          "defaultImportability": "package"
         }
       }
     ]

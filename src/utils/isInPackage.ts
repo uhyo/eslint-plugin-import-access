@@ -3,6 +3,7 @@ import path from "path";
 export type PackageOptions = {
   readonly indexLoophole: boolean;
   readonly filenameLoophole: boolean;
+  readonly defaultImportability: "public" | "package" | "private";
 };
 
 // ../ or ../../ or ...
