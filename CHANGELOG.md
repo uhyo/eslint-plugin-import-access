@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.1.1
+
+- Removed check against imports from inside `node_modules`. (#6)
+
 ### 1.1.0
 
 - Added a `defaultImportability` option with which you can use `@package` or `@private` as default importability of all exports in the project. (#5)
