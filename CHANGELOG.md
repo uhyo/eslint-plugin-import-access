@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.1.0
+
+- Added a `defaultImportability` option with which you can use `@package` or `@private` as default importability of all exports in the project. (#5)
+
 ### 1.0.2
 
 - Fix a bug that `export default` is not checked. (#2)
