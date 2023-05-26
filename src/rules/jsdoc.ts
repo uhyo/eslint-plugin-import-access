@@ -127,8 +127,12 @@ function checkNodeModulesPackageOrNot(
     const packageName = node.parent.source.value;
 
     try {
-      require.resolve(packageName);
-      return true;
+      const packagePath = require.resolve(packageName);
+      if (packagePath.includes("node_modules")) {
+        return true;
+      }
+
+      return false;
     } catch (e) {
       return false;
     }
