@@ -71,6 +71,12 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
+        const isNodeModules = checkNodeModulesPackageOrNot(node);
+        // ignore node_modules
+        if (isNodeModules) {
+          return;
+        }
+
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
@@ -81,6 +87,11 @@ const jsdocRule: Omit<
         }
       },
       ImportDefaultSpecifier(node) {
+        const isNodeModules = checkNodeModulesPackageOrNot(node);
+        // ignore node_modules
+        if (isNodeModules) {
+          return;
+        }
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
@@ -107,6 +118,25 @@ export function jsDocRuleDefaultOptions(
     defaultImportability = "public",
   } = options || {};
   return { indexLoophole, filenameLoophole, defaultImportability };
+}
+
+function checkNodeModulesPackageOrNot(
+  node: TSESTree.ImportSpecifier | TSESTree.ImportDefaultSpecifier
+) {
+  if (node.parent?.type === "ImportDeclaration") {
+    const packageName = node.parent.source.value;
+
+    try {
+      const packagePath = require.resolve(packageName);
+      if (packagePath.includes("node_modules")) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 function checkSymbol(
