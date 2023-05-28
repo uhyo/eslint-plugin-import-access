@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14, 16]
+        npm-version: [9]
         ts-version: [4.4, 4.5]
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +26,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm i -g npm@${{ matrix.npm-version }}
       - run: npm ci
       - run: npm install -D typescript@${{ matrix.ts-version }}
       - run: npm run build

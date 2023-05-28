@@ -128,4 +128,12 @@ describe("default export", () => {
     });
     expect(result).toMatchInlineSnapshot(`Array []`);
   });
+  it("No error for node_modules with defaultImportability=package even if package entrypoint is missing", async () => {
+    const result = await tester.lintFile("src/default-export3/foo.ts", {
+      jsdoc: {
+        defaultImportability: "package",
+      },
+    });
+    expect(result).toMatchInlineSnapshot(`Array []`);
+  });
 });

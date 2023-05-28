@@ -125,17 +125,19 @@ function checkNodeModulesPackageOrNot(
 ) {
   if (node.parent?.type === "ImportDeclaration") {
     const packageName = node.parent.source.value;
-
-    try {
-      const packagePath = require.resolve(packageName);
-      if (packagePath.includes("node_modules")) {
-        return true;
-      }
-
-      return false;
-    } catch (e) {
-      return false;
+    if (willBeImportedFromNodeModules(packageName)) {
+      return true;
     }
+    return willBeImportedFromNodeModules(`${packageName}/package.json`);
+  }
+}
+
+function willBeImportedFromNodeModules(importPath: string) {
+  try {
+    const resolvedPath = require.resolve(importPath);
+    return resolvedPath.includes("node_modules");
+  } catch {
+    return false;
   }
 }
 
