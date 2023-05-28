@@ -125,10 +125,25 @@ function checkNodeModulesPackageOrNot(
 ) {
   if (node.parent?.type === "ImportDeclaration") {
     const packageName = node.parent.source.value;
+    if (isNodeBuiltinModule(packageName)) {
+      return true;
+    }
     if (willBeImportedFromNodeModules(packageName)) {
       return true;
     }
     return willBeImportedFromNodeModules(`${packageName}/package.json`);
+  }
+}
+
+function isNodeBuiltinModule(importPath: string) {
+  if (importPath.startsWith("node:")) {
+    return true;
+  }
+  try {
+    require.resolve(`node:${importPath}`);
+    return true;
+  } catch {
+    return false;
   }
 }
 
