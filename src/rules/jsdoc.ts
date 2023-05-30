@@ -71,9 +71,8 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
-        const isNodeModules = checkNodeModulesPackageOrNot(node);
-        // ignore node_modules
-        if (isNodeModules) {
+        const shouldSkip = shouldSkipSymbolCheck(node);
+        if (shouldSkip) {
           return;
         }
 
@@ -87,11 +86,11 @@ const jsdocRule: Omit<
         }
       },
       ImportDefaultSpecifier(node) {
-        const isNodeModules = checkNodeModulesPackageOrNot(node);
-        // ignore node_modules
-        if (isNodeModules) {
+        const shouldSkip = shouldSkipSymbolCheck(node);
+        if (shouldSkip) {
           return;
         }
+
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
@@ -120,18 +119,12 @@ export function jsDocRuleDefaultOptions(
   return { indexLoophole, filenameLoophole, defaultImportability };
 }
 
-function checkNodeModulesPackageOrNot(
+function shouldSkipSymbolCheck(
   node: TSESTree.ImportSpecifier | TSESTree.ImportDefaultSpecifier
 ) {
   if (node.parent?.type === "ImportDeclaration") {
     const packageName = node.parent.source.value;
-    if (isNodeBuiltinModule(packageName)) {
-      return true;
-    }
-    if (willBeImportedFromNodeModules(packageName)) {
-      return true;
-    }
-    return willBeImportedFromNodeModules(`${packageName}/package.json`);
+    return isNodeBuiltinModule(packageName) || willBeImportedFromNodeModules(packageName);
   }
 }
 
@@ -147,11 +140,14 @@ function isNodeBuiltinModule(importPath: string) {
   }
 }
 
-function willBeImportedFromNodeModules(importPath: string) {
+function willBeImportedFromNodeModules(importPath: string): boolean {
   try {
     const resolvedPath = require.resolve(importPath);
-    return resolvedPath.includes("node_modules");
+    return resolvedPath.includes("/node_modules/");
   } catch {
+    if (!importPath.endsWith("/package.json")) {
+      return willBeImportedFromNodeModules(`${importPath}/package.json`);
+    }
     return false;
   }
 }
