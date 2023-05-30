@@ -146,6 +146,11 @@ function willBeImportedFromNodeModules(importPath: string): boolean {
     return resolvedPath.includes("/node_modules/");
   } catch {
     if (!importPath.endsWith("/package.json")) {
+      /**
+       * Some library has no entrypoint in package.json such as `main` field.
+       * (For example, a library which provides .d.ts file only via `types` field.)
+       * In this case require.resolve("library") fails, so we try to call require.resolve("library/package.json") instead.
+       */
       return willBeImportedFromNodeModules(`${importPath}/package.json`);
     }
     return false;
