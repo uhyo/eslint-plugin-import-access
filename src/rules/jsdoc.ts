@@ -71,9 +71,8 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
-        const isNodeModules = checkNodeModulesPackageOrNot(node);
-        // ignore node_modules
-        if (isNodeModules) {
+        const shouldSkip = shouldSkipSymbolCheck(node);
+        if (shouldSkip) {
           return;
         }
 
@@ -87,11 +86,11 @@ const jsdocRule: Omit<
         }
       },
       ImportDefaultSpecifier(node) {
-        const isNodeModules = checkNodeModulesPackageOrNot(node);
-        // ignore node_modules
-        if (isNodeModules) {
+        const shouldSkip = shouldSkipSymbolCheck(node);
+        if (shouldSkip) {
           return;
         }
+
         const checker = parserServices.program.getTypeChecker();
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
@@ -120,23 +119,40 @@ export function jsDocRuleDefaultOptions(
   return { indexLoophole, filenameLoophole, defaultImportability };
 }
 
-function checkNodeModulesPackageOrNot(
+function shouldSkipSymbolCheck(
   node: TSESTree.ImportSpecifier | TSESTree.ImportDefaultSpecifier
 ) {
   if (node.parent?.type === "ImportDeclaration") {
     const packageName = node.parent.source.value;
-    if (willBeImportedFromNodeModules(packageName)) {
-      return true;
-    }
-    return willBeImportedFromNodeModules(`${packageName}/package.json`);
+    return isNodeBuiltinModule(packageName) || willBeImportedFromNodeModules(packageName);
   }
 }
 
-function willBeImportedFromNodeModules(importPath: string) {
+function isNodeBuiltinModule(importPath: string) {
+  if (importPath.startsWith("node:")) {
+    return true;
+  }
+  try {
+    require.resolve(`node:${importPath}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function willBeImportedFromNodeModules(importPath: string): boolean {
   try {
     const resolvedPath = require.resolve(importPath);
-    return resolvedPath.includes("node_modules");
+    return resolvedPath.includes("/node_modules/");
   } catch {
+    if (!importPath.endsWith("/package.json")) {
+      /**
+       * Some library has no entrypoint in package.json such as `main` field.
+       * (For example, a library which provides .d.ts file only via `types` field.)
+       * In this case require.resolve("library") fails, so we try to call require.resolve("library/package.json") instead.
+       */
+      return willBeImportedFromNodeModules(`${importPath}/package.json`);
+    }
     return false;
   }
 }
