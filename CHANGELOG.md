@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.1.2
+
+- Fixed the issue where one could not import from type-only packages. (#7)
+- Fixed the issue where one could not import from Node.js built-in modules. (#8)
+
 ### 1.1.1
 
 - Removed check against imports from inside `node_modules`. (#6)
