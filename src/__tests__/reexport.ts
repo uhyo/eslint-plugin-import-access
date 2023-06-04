@@ -43,6 +43,32 @@ Array [
 ]
 `);
   });
+  it("Cannot re-export a package-private variable", async () => {
+    const result = await tester.lintFile(
+      "src/reexport4/indexLoophole/reexportFromSubFoo.ts"
+    );
+    expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot re-export a package-private export 'subFoo'",
+    "messageId": "package:reexport",
+    "nodeType": "ExportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+  });
+  it("Can re-export a variable exported from index.ts", async () => {
+    const result = await tester.lintFile(
+      "src/reexport4/indexLoophole/reexportFromSubIndex.ts"
+    );
+    expect(result).toMatchInlineSnapshot(`Array []`);
+  });
   describe("indexLoophole = false", () => {
     it("Cannot import a package-private variable from sub/index.ts", async () => {
       const result = await tester.lintFile("src/reexport/useFoo.ts", {
@@ -77,6 +103,31 @@ Array [
 ]
 `);
     });
+    it("Cannot re-export a package-private variable", async () => {
+      const result = await tester.lintFile(
+        "src/reexport4/indexLoophole/reexportFromSubIndex.ts",
+        {
+          jsdoc: {
+            indexLoophole: false,
+          },
+        }
+      );
+      expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot re-export a package-private export 'subFoo'",
+    "messageId": "package:reexport",
+    "nodeType": "ExportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+    });
   });
   describe("filenameLoophole = true", () => {
     it("Can import from sub directory of same name", async () => {
@@ -96,6 +147,44 @@ Array [
     "message": "Cannot import a package-private export 'subBar'",
     "messageId": "package",
     "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+    });
+    it("Can re-export from sub directory of same name", async () => {
+      const result = await tester.lintFile(
+        "src/reexport4/filenameLoophole/sub.ts",
+        {
+          jsdoc: {
+            indexLoophole: false,
+            filenameLoophole: true,
+          },
+        }
+      );
+      expect(result).toMatchInlineSnapshot(`Array []`);
+    });
+    it("Cannot re-export from sub directory of different name", async () => {
+      const result = await tester.lintFile(
+        "src/reexport4/filenameLoophole/sub2.ts",
+        {
+          jsdoc: {
+            indexLoophole: false,
+            filenameLoophole: true,
+          },
+        }
+      );
+      expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 16,
+    "endLine": 1,
+    "line": 1,
+    "message": "Cannot re-export a package-private export 'subFoo'",
+    "messageId": "package:reexport",
+    "nodeType": "ExportSpecifier",
     "ruleId": "import-access/jsdoc",
     "severity": 2,
   },

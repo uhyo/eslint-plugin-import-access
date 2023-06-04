@@ -4,7 +4,11 @@ import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
 import { PackageOptions } from "../utils/isInPackage";
 
-type MessageId = "package" | "private";
+type MessageId =
+  | "package"
+  | "package:reexport"
+  | "private"
+  | "private:reexport";
 
 export type JSDocRuleOptions = {
   /**
@@ -34,7 +38,11 @@ const jsdocRule: Omit<
     },
     messages: {
       package: "Cannot import a package-private export '{{ identifier }}'",
+      "package:reexport":
+        "Cannot re-export a package-private export '{{ identifier }}'",
       private: "Cannot import a private export '{{ identifier }}'",
+      "private:reexport":
+        "Cannot re-export a private export '{{ identifier }}'",
     },
     schema: [
       {
@@ -102,6 +110,29 @@ const jsdocRule: Omit<
           checkSymbol(context, packageOptions, checker, node, tsNode, symbol);
         }
       },
+      ExportSpecifier(node) {
+        const shouldSkip = shouldSkipSymbolCheck(node);
+        if (shouldSkip) {
+          return;
+        }
+
+        const checker = parserServices.program.getTypeChecker();
+
+        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+
+        const symbol = checker.getSymbolAtLocation(tsNode.name);
+        if (symbol) {
+          checkSymbol(
+            context,
+            packageOptions,
+            checker,
+            node,
+            tsNode,
+            symbol,
+            true
+          );
+        }
+      },
     };
   },
 };
@@ -120,12 +151,28 @@ export function jsDocRuleDefaultOptions(
 }
 
 function shouldSkipSymbolCheck(
-  node: TSESTree.ImportSpecifier | TSESTree.ImportDefaultSpecifier
-) {
-  if (node.parent?.type === "ImportDeclaration") {
-    const packageName = node.parent.source.value;
-    return isNodeBuiltinModule(packageName) || willBeImportedFromNodeModules(packageName);
+  node:
+    | TSESTree.ImportSpecifier
+    | TSESTree.ImportDefaultSpecifier
+    | TSESTree.ExportSpecifier
+): boolean {
+  if (!node.parent) {
+    return true;
   }
+  if (
+    node.parent.type !== "ImportDeclaration" &&
+    node.parent.type !== "ExportNamedDeclaration"
+  ) {
+    return true;
+  }
+  const packageName = node.parent.source?.value;
+  if (!packageName) {
+    return true;
+  }
+  return (
+    isNodeBuiltinModule(packageName) ||
+    willBeImportedFromNodeModules(packageName)
+  );
 }
 
 function isNodeBuiltinModule(importPath: string) {
@@ -163,7 +210,8 @@ function checkSymbol(
   checker: TypeChecker,
   originalNode: TSESTree.Node,
   tsNode: Node,
-  symbol: Symbol
+  symbol: Symbol,
+  reexport = false
 ) {
   const exsy = getImmediateAliasedSymbol(checker, symbol);
   if (!exsy) {
@@ -179,7 +227,7 @@ function checkSymbol(
     case "package": {
       context.report({
         node: originalNode,
-        messageId: "package",
+        messageId: reexport ? "package:reexport" : "package",
         data: {
           identifier: exsy.name,
         },
@@ -189,7 +237,7 @@ function checkSymbol(
     case "private": {
       context.report({
         node: originalNode,
-        messageId: "private",
+        messageId: reexport ? "private:reexport" : "private",
         data: {
           identifier: exsy.name,
         },
