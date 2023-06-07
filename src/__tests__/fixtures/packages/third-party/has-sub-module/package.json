@@ -1,0 +1,5 @@
+{
+  "name": "@fixture-package-third-party/has-sub-module",
+  "main": "index.js",
+  "types": "index.d.ts"
+}

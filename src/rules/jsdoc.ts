@@ -1,4 +1,5 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
+import resolvePkg from "resolve-pkg";
 import { Node, Symbol, TypeChecker } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
@@ -169,13 +170,10 @@ function shouldSkipSymbolCheck(
   if (!packageName) {
     return true;
   }
-  return (
-    isNodeBuiltinModule(packageName) ||
-    willBeImportedFromNodeModules(packageName)
-  );
+  return isNodeBuiltinModule(packageName) || isThirdPartyModule(packageName);
 }
 
-function isNodeBuiltinModule(importPath: string) {
+function isNodeBuiltinModule(importPath: string): boolean {
   if (importPath.startsWith("node:")) {
     return true;
   }
@@ -187,21 +185,9 @@ function isNodeBuiltinModule(importPath: string) {
   }
 }
 
-function willBeImportedFromNodeModules(importPath: string): boolean {
-  try {
-    const resolvedPath = require.resolve(importPath);
-    return resolvedPath.includes("/node_modules/");
-  } catch {
-    if (!importPath.endsWith("/package.json")) {
-      /**
-       * Some library has no entrypoint in package.json such as `main` field.
-       * (For example, a library which provides .d.ts file only via `types` field.)
-       * In this case require.resolve("library") fails, so we try to call require.resolve("library/package.json") instead.
-       */
-      return willBeImportedFromNodeModules(`${importPath}/package.json`);
-    }
-    return false;
-  }
+function isThirdPartyModule(importPath: string): boolean {
+  const pkg = resolvePkg(importPath);
+  return !!pkg;
 }
 
 function checkSymbol(
