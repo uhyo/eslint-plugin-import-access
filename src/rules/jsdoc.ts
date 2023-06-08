@@ -1,5 +1,6 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
-import resolvePkg from "resolve-pkg";
+import { create as createResolver } from "enhanced-resolve";
+import path from "path";
 import { Node, Symbol, TypeChecker } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
@@ -80,7 +81,12 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
-        const shouldSkip = shouldSkipSymbolCheck(node);
+        const sourceFilename = context.getFilename();
+        if (!sourceFilename) {
+          return;
+        }
+
+        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
         if (shouldSkip) {
           return;
         }
@@ -95,7 +101,12 @@ const jsdocRule: Omit<
         }
       },
       ImportDefaultSpecifier(node) {
-        const shouldSkip = shouldSkipSymbolCheck(node);
+        const sourceFilename = context.getFilename();
+        if (!sourceFilename) {
+          return;
+        }
+
+        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
         if (shouldSkip) {
           return;
         }
@@ -112,7 +123,12 @@ const jsdocRule: Omit<
         }
       },
       ExportSpecifier(node) {
-        const shouldSkip = shouldSkipSymbolCheck(node);
+        const sourceFilename = context.getFilename();
+        if (!sourceFilename) {
+          return;
+        }
+
+        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
         if (shouldSkip) {
           return;
         }
@@ -155,7 +171,8 @@ function shouldSkipSymbolCheck(
   node:
     | TSESTree.ImportSpecifier
     | TSESTree.ImportDefaultSpecifier
-    | TSESTree.ExportSpecifier
+    | TSESTree.ExportSpecifier,
+  sourceFilename: string
 ): boolean {
   if (!node.parent) {
     return true;
@@ -166,11 +183,14 @@ function shouldSkipSymbolCheck(
   ) {
     return true;
   }
-  const packageName = node.parent.source?.value;
-  if (!packageName) {
+  const importPath = node.parent.source?.value;
+  if (!importPath) {
     return true;
   }
-  return isNodeBuiltinModule(packageName) || isThirdPartyModule(packageName);
+  if (isNodeBuiltinModule(importPath)) {
+    return true;
+  }
+  return isThirdPartyModule(importPath, sourceFilename);
 }
 
 function isNodeBuiltinModule(importPath: string): boolean {
@@ -185,9 +205,57 @@ function isNodeBuiltinModule(importPath: string): boolean {
   }
 }
 
-function isThirdPartyModule(importPath: string): boolean {
-  const pkg = resolvePkg(importPath);
-  return !!pkg;
+const resolveImportPath = createResolver.sync({
+  mainFields: [
+    "main",
+    "module",
+    "browser",
+    "esnext",
+    "react-native",
+    "types",
+    "typings",
+  ],
+  conditionNames: [
+    "node-addons",
+    "node",
+    "import",
+    "require",
+    "default",
+    "types",
+    "deno",
+    "browser",
+    "react-native",
+    "development",
+    "production",
+  ],
+  extensions: [
+    ".js",
+    ".jsx",
+    ".cjs",
+    ".mjs",
+    ".ts",
+    ".tsx",
+    ".cts",
+    ".mts",
+    ".json",
+  ],
+  symlinks: false,
+});
+
+function isThirdPartyModule(
+  importPath: string,
+  sourceFilename: string
+): boolean {
+  try {
+    const from = path.dirname(sourceFilename);
+    const resolvedPath = resolveImportPath(from, importPath);
+    if (!resolvedPath) {
+      return false;
+    }
+    return resolvedPath.includes("/node_modules/");
+  } catch {
+    return false;
+  }
 }
 
 function checkSymbol(

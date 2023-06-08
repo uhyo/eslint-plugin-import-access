@@ -1,0 +1,9 @@
+{
+  "name": "@fixture-package-third-party/with-exports-field",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  }
+}
