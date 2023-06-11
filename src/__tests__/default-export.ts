@@ -120,28 +120,4 @@ describe("default export", () => {
       ]
     `);
   });
-  it("No error for node_modules with defaultImportability=package", async () => {
-    const result = await tester.lintFile("src/default-export2/foo.ts", {
-      jsdoc: {
-        defaultImportability: "package",
-      },
-    });
-    expect(result).toMatchInlineSnapshot(`Array []`);
-  });
-  it("No error for node_modules with defaultImportability=package even if package entrypoint is missing", async () => {
-    const result = await tester.lintFile("src/default-export3/foo.ts", {
-      jsdoc: {
-        defaultImportability: "package",
-      },
-    });
-    expect(result).toMatchInlineSnapshot(`Array []`);
-  });
-  it("No error for Node.js builtin modules with defaultImportability=package ", async () => {
-    const result = await tester.lintFile("src/default-export4/foo.ts", {
-      jsdoc: {
-        defaultImportability: "package",
-      },
-    });
-    expect(result).toMatchInlineSnapshot(`Array []`);
-  });
 });

@@ -27,13 +27,19 @@
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^5.9.1",
     "@typescript-eslint/typescript-estree": "^5.9.1",
+    "enhanced-resolve": "^5.14.1",
     "tsutils": "^3.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
-    "@fixture-package/missing-entrypoint": "file:src/__tests__/fixtures/packages/missing_entrypoint",
+    "@fixture-package-third-party/has-sub-module": "file:src/__tests__/fixtures/packages/third-party/has-sub-module",
+    "@fixture-package-third-party/missing-entrypoint": "file:src/__tests__/fixtures/packages/third-party/missing-entrypoint",
+    "@fixture-package-third-party/with-exports-field": "file:src/__tests__/fixtures/packages/third-party/with-exports-field",
+    "@fixture-package-workspace/has-sub-module": "*",
+    "@fixture-package-workspace/missing-entrypoint": "*",
+    "@fixture-package-workspace/with-exports-field": "*",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
@@ -44,5 +50,8 @@
     "jest": "^27.0.5",
     "prettier": "^2.3.1",
     "typescript": "^4.5.4"
-  }
+  },
+  "workspaces": [
+    "src/__tests__/fixtures/packages/workspaces/*"
+  ]
 }
