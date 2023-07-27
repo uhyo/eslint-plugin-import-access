@@ -1,7 +1,6 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/utils";
 import { Node, Program, Symbol } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
-import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
 import { PackageOptions } from "../utils/isInPackage";
 
 type MessageId =
@@ -221,7 +220,7 @@ function checkSymbol(
   reexport = false,
 ) {
   const checker = program.getTypeChecker();
-  const exsy = getImmediateAliasedSymbol(checker, symbol);
+  const exsy = checker.getImmediateAliasedSymbol(symbol);
   if (!exsy) {
     return;
   }
