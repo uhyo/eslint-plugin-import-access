@@ -1,9 +1,9 @@
 import jsdoc from "./rules/jsdoc";
 import { tsServerPluginInit } from "./ts-server-plugin";
 
-export = Object.assign(tsServerPluginInit, {
+const eslintRule = {
   rules: {
-    jsdoc,
+    jsdoc: jsdoc as unknown,
   },
   configs: {
     all: {
@@ -13,4 +13,8 @@ export = Object.assign(tsServerPluginInit, {
       },
     },
   },
-});
+};
+
+const plugin = Object.assign(tsServerPluginInit, eslintRule);
+
+export = plugin;

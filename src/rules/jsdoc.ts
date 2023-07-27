@@ -1,12 +1,11 @@
-import { TSESLint, TSESTree } from "@typescript-eslint/experimental-utils";
-import { create as createResolver } from "enhanced-resolve";
-import path from "path";
-import { Node, Symbol, TypeChecker } from "typescript";
+import { TSESLint, TSESTree } from "@typescript-eslint/utils";
+import { Node, Program, Symbol } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { getImmediateAliasedSymbol } from "../utils/getImmediateAliasedSymbol";
 import { PackageOptions } from "../utils/isInPackage";
 
 type MessageId =
+  | "no-program"
   | "package"
   | "package:reexport"
   | "private"
@@ -35,10 +34,10 @@ const jsdocRule: Omit<
     type: "problem",
     docs: {
       description: "Prohibit importing private exports.",
-      recommended: "error",
       url: "TODO",
     },
     messages: {
+      "no-program": "Cannot retrieve TypeScript program for this file.",
       package: "Cannot import a package-private export '{{ identifier }}'",
       "package:reexport":
         "Cannot re-export a package-private export '{{ identifier }}'",
@@ -65,6 +64,13 @@ const jsdocRule: Omit<
       },
     ],
   },
+  defaultOptions: [
+    {
+      indexLoophole: true,
+      filenameLoophole: false,
+      defaultImportability: "public",
+    },
+  ],
   create(context) {
     const { parserServices, options } = context;
     if (!parserServices) {
@@ -86,54 +92,20 @@ const jsdocRule: Omit<
           return;
         }
 
-        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        if (shouldSkip) {
+        if (parserServices.program === null) {
+          context.report({
+            node,
+            messageId: "no-program",
+          });
           return;
         }
 
         const checker = parserServices.program.getTypeChecker();
 
-        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-
-        const symbol = checker.getSymbolAtLocation(tsNode.name);
-        if (symbol) {
-          checkSymbol(context, packageOptions, checker, node, tsNode, symbol);
-        }
-      },
-      ImportDefaultSpecifier(node) {
-        const sourceFilename = context.getFilename();
-        if (!sourceFilename) {
-          return;
-        }
-
-        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        if (shouldSkip) {
-          return;
-        }
-
-        const checker = parserServices.program.getTypeChecker();
-
-        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-        if (!tsNode.name) {
-          return;
-        }
-        const symbol = checker.getSymbolAtLocation(tsNode.name);
-        if (symbol) {
-          checkSymbol(context, packageOptions, checker, node, tsNode, symbol);
-        }
-      },
-      ExportSpecifier(node) {
-        const sourceFilename = context.getFilename();
-        if (!sourceFilename) {
-          return;
-        }
-
-        const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        if (shouldSkip) {
-          return;
-        }
-
-        const checker = parserServices.program.getTypeChecker();
+        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
+        // if (shouldSkip) {
+        //   return;
+        // }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
 
@@ -142,11 +114,83 @@ const jsdocRule: Omit<
           checkSymbol(
             context,
             packageOptions,
-            checker,
+            parserServices.program,
             node,
             tsNode,
             symbol,
-            true
+          );
+        }
+      },
+      ImportDefaultSpecifier(node) {
+        const sourceFilename = context.getFilename();
+        if (!sourceFilename) {
+          return;
+        }
+
+        if (parserServices.program === null) {
+          context.report({
+            node,
+            messageId: "no-program",
+          });
+          return;
+        }
+
+        const checker = parserServices.program.getTypeChecker();
+
+        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
+        // if (shouldSkip) {
+        //   return;
+        // }
+
+        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        if (!tsNode.name) {
+          return;
+        }
+        const symbol = checker.getSymbolAtLocation(tsNode.name);
+        if (symbol) {
+          checkSymbol(
+            context,
+            packageOptions,
+            parserServices.program,
+            node,
+            tsNode,
+            symbol,
+          );
+        }
+      },
+      ExportSpecifier(node) {
+        const sourceFilename = context.getFilename();
+        if (!sourceFilename) {
+          return;
+        }
+
+        if (parserServices.program === null) {
+          context.report({
+            node,
+            messageId: "no-program",
+          });
+          return;
+        }
+
+        const checker = parserServices.program.getTypeChecker();
+
+        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
+        // if (shouldSkip) {
+        //   return;
+        // }
+
+        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+
+        const symbol = checker.getSymbolAtLocation(tsNode.name);
+        if (symbol) {
+          checkSymbol(
+            context,
+            packageOptions,
+            parserServices.program,
+            node,
+            tsNode,
+            symbol,
+            true,
           );
         }
       },
@@ -157,7 +201,7 @@ const jsdocRule: Omit<
 export default jsdocRule;
 
 export function jsDocRuleDefaultOptions(
-  options: Partial<JSDocRuleOptions> | undefined
+  options: Partial<JSDocRuleOptions> | undefined,
 ): JSDocRuleOptions {
   const {
     indexLoophole = true,
@@ -167,115 +211,25 @@ export function jsDocRuleDefaultOptions(
   return { indexLoophole, filenameLoophole, defaultImportability };
 }
 
-function shouldSkipSymbolCheck(
-  node:
-    | TSESTree.ImportSpecifier
-    | TSESTree.ImportDefaultSpecifier
-    | TSESTree.ExportSpecifier,
-  sourceFilename: string
-): boolean {
-  if (!node.parent) {
-    return true;
-  }
-  if (
-    node.parent.type !== "ImportDeclaration" &&
-    node.parent.type !== "ExportNamedDeclaration"
-  ) {
-    return true;
-  }
-  const importPath = node.parent.source?.value;
-  if (!importPath) {
-    return true;
-  }
-  if (isNodeBuiltinModule(importPath)) {
-    return true;
-  }
-  return isThirdPartyModule(importPath, sourceFilename);
-}
-
-function isNodeBuiltinModule(importPath: string): boolean {
-  if (importPath.startsWith("node:")) {
-    return true;
-  }
-  try {
-    require.resolve(`node:${importPath}`);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-const resolveImportPath = createResolver.sync({
-  mainFields: [
-    "main",
-    "module",
-    "browser",
-    "esnext",
-    "react-native",
-    "types",
-    "typings",
-  ],
-  conditionNames: [
-    "node-addons",
-    "node",
-    "import",
-    "require",
-    "default",
-    "types",
-    "deno",
-    "browser",
-    "react-native",
-    "development",
-    "production",
-  ],
-  extensions: [
-    ".js",
-    ".jsx",
-    ".cjs",
-    ".mjs",
-    ".ts",
-    ".tsx",
-    ".cts",
-    ".mts",
-    ".json",
-  ],
-  symlinks: false,
-});
-
-function isThirdPartyModule(
-  importPath: string,
-  sourceFilename: string
-): boolean {
-  try {
-    const from = path.dirname(sourceFilename);
-    const resolvedPath = resolveImportPath(from, importPath);
-    if (!resolvedPath) {
-      return false;
-    }
-    return resolvedPath.includes("/node_modules/");
-  } catch {
-    return false;
-  }
-}
-
 function checkSymbol(
   context: Readonly<TSESLint.RuleContext<MessageId, unknown[]>>,
   packageOptions: PackageOptions,
-  checker: TypeChecker,
+  program: Program,
   originalNode: TSESTree.Node,
   tsNode: Node,
   symbol: Symbol,
-  reexport = false
+  reexport = false,
 ) {
+  const checker = program.getTypeChecker();
   const exsy = getImmediateAliasedSymbol(checker, symbol);
   if (!exsy) {
     return;
   }
   const checkResult = checkSymbolImportability(
     packageOptions,
-    checker,
+    program,
     tsNode.getSourceFile().fileName,
-    exsy
+    exsy,
   );
   switch (checkResult) {
     case "package": {

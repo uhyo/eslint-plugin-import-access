@@ -1,3 +1,4 @@
+import type ts from "typescript/lib/tsserverlibrary";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { jsDocRuleDefaultOptions, JSDocRuleOptions } from "../rules/jsdoc";
 import { PackageOptions } from "../utils/isInPackage";
@@ -20,7 +21,7 @@ export function tsServerPluginInit(modules: {
     const config: PluginConfig = info.config;
 
     const packageOptions: PackageOptions = jsDocRuleDefaultOptions(
-      config.jsdoc
+      config.jsdoc,
     );
 
     // Set up decorator
@@ -29,13 +30,14 @@ export function tsServerPluginInit(modules: {
       keyof ts.LanguageService
     >) {
       const x = info.languageService[k];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       proxy[k] = x as any;
     }
     proxy.getCompletionsAtPosition = (fileName, position, options) => {
       const res = info.languageService.getCompletionsAtPosition(
         fileName,
         position,
-        options
+        options,
       );
       const prog = info.languageService.getProgram();
       if (prog === undefined) {
@@ -59,16 +61,16 @@ export function tsServerPluginInit(modules: {
           }
           const symb = checker.getSymbolAtLocation(sourceFile);
           const exportedSymbol = symb?.exports?.get(
-            typescript.escapeLeadingUnderscores(exportName)
+            typescript.escapeLeadingUnderscores(exportName),
           );
           if (exportedSymbol === undefined) {
             return true;
           }
           const checkResult = checkSymbolImportability(
             packageOptions,
-            checker,
+            prog,
             fileName,
-            exportedSymbol
+            exportedSymbol,
           );
           return checkResult === undefined;
         });
@@ -85,7 +87,7 @@ export function tsServerPluginInit(modules: {
       end,
       errorCodes,
       formatOptions,
-      preferences
+      preferences,
     ) => {
       const res = info.languageService.getCodeFixesAtPosition(
         fileName,
@@ -93,7 +95,7 @@ export function tsServerPluginInit(modules: {
         end,
         errorCodes,
         formatOptions,
-        preferences
+        preferences,
       );
       const prog = info.languageService.getProgram();
       if (prog === undefined) {
@@ -116,13 +118,13 @@ export function tsServerPluginInit(modules: {
           fileName,
           undefined,
           undefined,
-          info.project.getCompilerOptions()
+          info.project.getCompilerOptions(),
         )?.[0];
         if (resolvedModule === undefined) {
           return true;
         }
         const exporterSourcefile = prog.getSourceFile(
-          resolvedModule.resolvedFileName
+          resolvedModule.resolvedFileName,
         );
         if (exporterSourcefile === undefined) {
           return true;
@@ -130,16 +132,16 @@ export function tsServerPluginInit(modules: {
 
         const symb = checker.getSymbolAtLocation(exporterSourcefile);
         const exportedSymbol = symb?.exports?.get(
-          typescript.escapeLeadingUnderscores(exportName)
+          typescript.escapeLeadingUnderscores(exportName),
         );
         if (exportedSymbol === undefined) {
           return true;
         }
         const checkResult = checkSymbolImportability(
           packageOptions,
-          checker,
+          prog,
           fileName,
-          exportedSymbol
+          exportedSymbol,
         );
         return checkResult === undefined;
       });

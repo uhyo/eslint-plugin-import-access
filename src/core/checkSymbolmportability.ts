@@ -1,4 +1,4 @@
-import { Symbol, TypeChecker } from "typescript";
+import { Program, Symbol } from "typescript";
 import { assertNever } from "../utils/assertNever";
 import { concatArrays } from "../utils/concatArrays";
 import { findExportedDeclaration } from "../utils/findExportableDeclaration";
@@ -14,9 +14,9 @@ export type CheckSymbolResult = "package" | "private" | undefined;
 
 export function checkSymbolImportability(
   packageOptions: PackageOptions,
-  checker: TypeChecker,
+  program: Program,
   importerFilename: string,
-  exportedSymbol: Symbol
+  exportedSymbol: Symbol,
 ): CheckSymbolResult {
   const rawDecl = exportedSymbol.declarations?.[0];
   if (!rawDecl) {
@@ -27,13 +27,20 @@ export function checkSymbolImportability(
     return;
   }
 
+  // If declaration is from external module, treat as importable
+  if (program.isSourceFileFromExternalLibrary(decl.getSourceFile())) {
+    return;
+  }
+
+  const checker = program.getTypeChecker();
+
   // found an export declaration
   const jsDocs = concatArrays<Tag>(
     exportedSymbol.getJsDocTags(checker).map((tag) => ({
       name: tag.name,
       text: tag.text?.[0].text || "",
     })),
-    getJSDocTags(decl)
+    getJSDocTags(decl),
   );
   if (!jsDocs) {
     switch (packageOptions.defaultImportability) {
@@ -45,7 +52,7 @@ export function checkSymbolImportability(
         const inPackage = isInPackage(
           importerFilename,
           decl.getSourceFile().fileName,
-          packageOptions
+          packageOptions,
         );
         return inPackage ? undefined : "package";
       }
@@ -67,7 +74,7 @@ export function checkSymbolImportability(
   const inPackage = isInPackage(
     importerFilename,
     decl.getSourceFile().fileName,
-    packageOptions
+    packageOptions,
   );
   return inPackage ? undefined : "package";
 }

@@ -1,5 +1,5 @@
-import { TSESLint } from "@typescript-eslint/experimental-utils";
 import * as parser from "@typescript-eslint/parser";
+import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
 import { Program } from "typescript";
