@@ -1,5 +1,16 @@
 ## Changelog
 
+### 2.0.0
+
+#### :warning: BREAKING CHANGES
+- Minimum supported TypeScript version is now 4.7 (previously 4.4)
+- Minimum supported Node.js version is now 16 (previously 14)
+
+#### Other Changes
+
+- Added check for the `export { ... } from` syntax. Previously you could export a private symbol by using this syntax, but now it is also checked. (#9)
+- Fixed the handling of symlinked external modules. (#10)
+
 ### 1.1.2
 
 - Fixed the issue where one could not import from type-only packages. (#7)
