@@ -4,6 +4,8 @@
 
 This package provides a [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) rule that restricts importing variables marked as `@package` from a file outside the same directory. Also, this package serves as a TypeScript Language Service Plugin that prevents auto-completion of such imports.
 
+![Illustration of how `@package` works.](./docs/concept.png)
+
 ## Why?
 
 The largest encapsulation unit available for a TypeScript project is a file. That is, variables not exported from a file is only visible to code in the same file. Once a variable is exported, it is visible from the entire project.
