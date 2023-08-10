@@ -51,7 +51,11 @@ export function tsServerPluginInit(modules: {
           if (entry.kindModifiers !== "export" || !entry.data) {
             return true;
           }
-          const { exportName, fileName: entryFileName } = entry.data;
+          const {
+            exportName,
+            fileName: entryFileName,
+            moduleSpecifier,
+          } = entry.data;
           if (!entryFileName) {
             return true;
           }
@@ -70,6 +74,7 @@ export function tsServerPluginInit(modules: {
             packageOptions,
             prog,
             fileName,
+            moduleSpecifier ?? entryFileName,
             exportedSymbol,
           );
           return checkResult === undefined;
@@ -141,6 +146,7 @@ export function tsServerPluginInit(modules: {
           packageOptions,
           prog,
           fileName,
+          exportFileName,
           exportedSymbol,
         );
         return checkResult === undefined;

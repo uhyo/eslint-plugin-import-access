@@ -1,6 +1,6 @@
 # `import-access/jsdoc` rule
 
-_Note: although this rule does not seem related to types, this rule requires [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) settings and also [a type information enabled](https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#parseroptionsproject)._
+_Note: although this rule does not seem related to types, this rule requires [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) settings with [the `project` parser option set](https://typescript-eslint.io/packages/parser/#project)._
 
 When this rule is enabled, `export` declaration can have a JSDoc `@package` annotation. Such exports can be imported only from files in the same directory or sub directories in that directory.
 
@@ -13,7 +13,8 @@ As a bonus feature, importing exports annotated with `@private` is always forbid
     "import-access/jsdoc": ["error", {
       "indexLoophole": true,
       "filenameLoophole": false,
-      "defaultImportability": "public" // "public" | "package" | "private"
+      "defaultImportability": "public", // "public" | "package" | "private"
+      "treatSelfReferenceAs": "external" // "internal" | "external"
     }],
   }
 ```
@@ -106,7 +107,11 @@ import { pika } from "./sub/foo";
 
 _Default value: `public`_
 
-You can set default importability value for apply entire your project.
+You can set default importability value that applies to the entire project.
+
+For example, i you set the default importability to `package`, any export without JSDoc annotation is treated as `@package`.
+
+You can override this default value by adding JSDoc annotation to the export. To make an export public, add `@public` annotation. 
 
 **Example:**
 
@@ -124,3 +129,13 @@ import { pika } from "./bar";
 // you cannot import because pika is @package 
 import { pika } from "./sub/bar`;
 ```
+
+### `treatSelfReferenceAs`
+
+_Default value: `external`_
+
+Self referencing is [a feature of Node.js](https://nodejs.org/api/packages.html#self-referencing-a-package-using-its-name) that allows importing a file in the same package by using package name as the module specifier.
+
+When this option is set to `external`, self reference is treated as an external export. Therefore, no restriction is applied to such imports.
+
+When this option is set to `internal`, self reference is treated as an internal export. Therefore, self reference is restricted by the same rules as other internal exports.

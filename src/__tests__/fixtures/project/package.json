@@ -1,0 +1,7 @@
+{
+  "name": "project",
+  "private": true,
+  "exports": {
+    "./self-reference": "./src/self-reference/index.js"
+  }
+}

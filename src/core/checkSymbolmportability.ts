@@ -5,6 +5,7 @@ import { findExportedDeclaration } from "../utils/findExportableDeclaration";
 import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
 import { Tag, getJSDocTags } from "../utils/getJSDocTags";
 import { PackageOptions, isInPackage } from "../utils/isInPackage";
+import { lookupPackageJson } from "./lookupPackageJson";
 
 /**
  * Result of checking a symbol.
@@ -16,6 +17,7 @@ export function checkSymbolImportability(
   packageOptions: PackageOptions,
   program: Program,
   importerFilename: string,
+  moduleSpecifier: string,
   exportedSymbol: Symbol,
 ): CheckSymbolResult {
   const rawDecl = exportedSymbol.declarations?.[0];
@@ -30,6 +32,21 @@ export function checkSymbolImportability(
   // If declaration is from external module, treat as importable
   if (program.isSourceFileFromExternalLibrary(decl.getSourceFile())) {
     return;
+  }
+
+  if (packageOptions.treatSelfReferenceAs === "external") {
+    // Check whether this import is the result of a self-reference.
+    const match = possibleSubpathImportFromPackage.exec(moduleSpecifier);
+    if (match) {
+      const packageName = match[1];
+      const lookupResult = lookupPackageJson(importerFilename);
+      if (lookupResult !== null) {
+        if (lookupResult.packageJson.name === packageName) {
+          // This is a self-reference, so treat as external.
+          return;
+        }
+      }
+    }
   }
 
   const checker = program.getTypeChecker();
@@ -78,3 +95,6 @@ export function checkSymbolImportability(
   );
   return inPackage ? undefined : "package";
 }
+
+const possibleSubpathImportFromPackage =
+  /^(?![./\\])([^/\\]*)(?:$|[/\\][^/\\])/;

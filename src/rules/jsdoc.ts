@@ -1,5 +1,5 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/utils";
-import { Node, Program, Symbol } from "typescript";
+import { Node, Program, Symbol, isStringLiteral } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability";
 import { PackageOptions } from "../utils/isInPackage";
 
@@ -23,6 +23,13 @@ export type JSDocRuleOptions = {
    * Whether packages importability is restricted to public exports only or not.
    */
   defaultImportability: "public" | "package" | "private";
+  /**
+   * Whether to treat self-reference as internal or external.
+   * When `external`, imports using the self-referencing feature of Node.js are
+   * treated as imports from external packages, meaning that they bypass
+   * the importability check.
+   */
+  treatSelfReferenceAs: "internal" | "external";
 };
 
 const jsdocRule: Omit<
@@ -68,6 +75,7 @@ const jsdocRule: Omit<
       indexLoophole: true,
       filenameLoophole: false,
       defaultImportability: "public",
+      treatSelfReferenceAs: "external",
     },
   ],
   create(context) {
@@ -75,13 +83,18 @@ const jsdocRule: Omit<
     if (!parserServices) {
       return {};
     }
-    const { indexLoophole, filenameLoophole, defaultImportability } =
-      jsDocRuleDefaultOptions(options[0]);
+    const {
+      indexLoophole,
+      filenameLoophole,
+      defaultImportability,
+      treatSelfReferenceAs,
+    } = jsDocRuleDefaultOptions(options[0]);
 
     const packageOptions: PackageOptions = {
       indexLoophole,
       filenameLoophole,
       defaultImportability,
+      treatSelfReferenceAs,
     };
 
     return {
@@ -106,16 +119,25 @@ const jsdocRule: Omit<
         //   return;
         // }
 
+        parserServices;
+
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
 
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          const moduleSpecifier = tsNode.parent.parent.parent.moduleSpecifier;
+          if (!isStringLiteral(moduleSpecifier)) {
+            // Should not happen (as of TS 5.1)
+            return;
+          }
+
           checkSymbol(
             context,
             packageOptions,
             parserServices.program,
             node,
             tsNode,
+            moduleSpecifier.text,
             symbol,
           );
         }
@@ -147,12 +169,19 @@ const jsdocRule: Omit<
         }
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          const moduleSpecifier = tsNode.parent.moduleSpecifier;
+          if (!isStringLiteral(moduleSpecifier)) {
+            // Should not happen (as of TS 5.1)
+            return;
+          }
+
           checkSymbol(
             context,
             packageOptions,
             parserServices.program,
             node,
             tsNode,
+            moduleSpecifier.text,
             symbol,
           );
         }
@@ -182,12 +211,18 @@ const jsdocRule: Omit<
 
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          const moduleSpecifier = tsNode.parent.parent.moduleSpecifier;
+          if (!moduleSpecifier || !isStringLiteral(moduleSpecifier)) {
+            return;
+          }
+
           checkSymbol(
             context,
             packageOptions,
             parserServices.program,
             node,
             tsNode,
+            moduleSpecifier.text,
             symbol,
             true,
           );
@@ -206,8 +241,14 @@ export function jsDocRuleDefaultOptions(
     indexLoophole = true,
     filenameLoophole = false,
     defaultImportability = "public",
+    treatSelfReferenceAs = "external",
   } = options || {};
-  return { indexLoophole, filenameLoophole, defaultImportability };
+  return {
+    indexLoophole,
+    filenameLoophole,
+    defaultImportability,
+    treatSelfReferenceAs,
+  };
 }
 
 function checkSymbol(
@@ -216,6 +257,7 @@ function checkSymbol(
   program: Program,
   originalNode: TSESTree.Node,
   tsNode: Node,
+  moduleSpecifier: string,
   symbol: Symbol,
   reexport = false,
 ) {
@@ -228,6 +270,7 @@ function checkSymbol(
     packageOptions,
     program,
     tsNode.getSourceFile().fileName,
+    moduleSpecifier,
     exsy,
   );
   switch (checkResult) {

@@ -37,4 +37,4 @@ In addition, options can be provided to the plugin:
 }
 ```
 
-See details of the `indexLoophole` and `filenameLoophole` options at [the reference of the import-access/jsdoc rule](./rule-jsdoc.md).
+See details of these options at [the reference of the import-access/jsdoc rule](./rule-jsdoc.md).

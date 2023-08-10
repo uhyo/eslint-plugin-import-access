@@ -4,6 +4,7 @@ export type PackageOptions = {
   readonly indexLoophole: boolean;
   readonly filenameLoophole: boolean;
   readonly defaultImportability: "public" | "package" | "private";
+  readonly treatSelfReferenceAs: "internal" | "external";
 };
 
 // ../ or ../../ or ...
@@ -17,7 +18,7 @@ const indexFileRegExp = new RegExp(`\\${path.sep}index\\.[cm]?[jt]sx?$`);
 export function isInPackage(
   importer: string,
   exporter: string,
-  packageOptions: PackageOptions
+  packageOptions: PackageOptions,
 ): boolean {
   if (packageOptions.indexLoophole) {
     const match = exporter.match(indexFileRegExp);

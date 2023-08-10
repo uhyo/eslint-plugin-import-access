@@ -193,4 +193,5 @@ module.exports = {
     escapeString: true,
     printBasicPrototype: true,
   },
+  prettierPath: null,
 };
