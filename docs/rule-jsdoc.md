@@ -41,13 +41,14 @@ import { fooPackageVariable } from "./sub/foo";
 
 ## Options
 
-The `import-access/jsdoc` rule has following options and default values:
+The `import-access/jsdoc` rule has following options. All options are optional (see below for default values).
 
 ```ts
 type JSDocRuleOptions = {
   indexLoophole: boolean;
   filenameLoophole: boolean;
   defaultImportability: "public" | "pacakge" | "private";
+  treatSelfReferenceAs: "internal" | "external";
 };
 ```
 
