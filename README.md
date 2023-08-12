@@ -4,7 +4,7 @@
 
 This package provides a [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) rule that restricts importing variables marked as `@package` from a file outside the same directory. Also, this package serves as a TypeScript Language Service Plugin that prevents auto-completion of such imports.
 
-![Illustration of how `@package` works.](./docs/concept.png)
+![Illustration of how `@package` works.](./docs/images/concept.png)
 
 ## Why?
 

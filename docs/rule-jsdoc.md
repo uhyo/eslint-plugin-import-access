@@ -57,7 +57,31 @@ _Default value: `true`_
 
 Enables the **index loophole** feature. When this option is enabled, `sub/index.ts` is treated similarly to `sub.ts`. That is, package-private exports exported from `index.ts` can be imported from files in the parent directory.
 
+![Illustration of how indexLoophole works.](./images/indexLoophole.png)
+
 **Example:**
+
+```ts
+// ----- sub/index.ts
+/**
+ * @package
+ */
+export const subIndex = 3;
+
+// ----- sub/foo.ts
+/**
+ * @package
+ */
+export const foo = 3;
+
+// ----- main.ts
+// This is CORRECT under indexLoophole: true
+import { subIndex } from "./sub";
+// This is still INCORRECT
+import { foo } from "./sub/foo";
+```
+
+Note that the loophole is effective only for one level. That is, package-private exports from `index.ts` cannot be imported from files in the parent directory's parent directory.
 
 ```ts
 // ----- sub/sub2/index.ts
@@ -81,6 +105,8 @@ import { pika } from "./sub/sub2/index`;
 _Default value: `false`_
 
 Enables the **filename loophole** feature. When this option is enabled, package-private exports in a directory can be imported from a file with the same name as the directory.
+
+![Illustration of how filenameLoophole works.](./images/filenameLoophole.png)
 
 **Example:**
 
@@ -139,3 +165,23 @@ Self referencing is [a feature of Node.js](https://nodejs.org/api/packages.html#
 When this option is set to `external`, self reference is treated as an external export. Therefore, no restriction is applied to such imports.
 
 When this option is set to `internal`, self reference is treated as an internal export. Therefore, self reference is restricted by the same rules as other internal exports.
+
+**Example:**
+
+```ts
+// ----- src/somewhere/foo.ts
+/**
+ * @package
+ */
+export const something = "something";
+
+// ----- src/main.ts
+// This is CORRECT when treatSelfReference: external
+import { something } from "my-package/foo";
+```
+
+In the above example, `my-package/foo` is a self reference that connects to `src/somewhere/foo.ts`.
+
+When `treatSelfReference: external`, this import is always allowed even though `something` is a package-private export because it is treated like an import from an external package.
+
+When `treatSelfReference: internal`, this import is disallowed because import from `my-package/foo` is treated like an import from `src/somewhere/foo.ts`.
