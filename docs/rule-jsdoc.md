@@ -177,12 +177,12 @@ When this option is set to `internal`, self reference is treated as an internal 
 export const something = "something";
 
 // ----- src/main.ts
-// This is CORRECT when treatSelfReference: external
+// This is CORRECT when treatSelfReferenceAs: external
 import { something } from "my-package/foo";
 ```
 
 In the above example, `my-package/foo` is a self reference that connects to `src/somewhere/foo.ts`.
 
-When `treatSelfReference: external`, this import is always allowed even though `something` is a package-private export because it is treated like an import from an external package.
+When `treatSelfReferenceAs: external`, this import is always allowed even though `something` is a package-private export because it is treated like an import from an external package.
 
-When `treatSelfReference: internal`, this import is disallowed because import from `my-package/foo` is treated like an import from `src/somewhere/foo.ts`.
+When `treatSelfReferenceAs: internal`, this import is disallowed because import from `my-package/foo` is treated like an import from `src/somewhere/foo.ts`.
