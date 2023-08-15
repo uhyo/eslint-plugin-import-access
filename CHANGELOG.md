@@ -1,5 +1,10 @@
 ## Changelog
 
+### 2.1.1
+
+- Fixed the `treatSelfReferenceAs` option to support scoped packages. (#13)
+
+
 ### 2.1.0
 
 - Added a `treatSelfReferenceAs` option which allows you to treat self-references either like internal file or like external module. (#12)
