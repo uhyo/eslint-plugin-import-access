@@ -1,3 +1,3 @@
-import { exportedValue } from "project/self-reference";
+import { exportedValue } from "@uhyo/project/self-reference";
 
 console.log(exportedValue);

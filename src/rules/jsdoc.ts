@@ -65,6 +65,10 @@ const jsdocRule: Omit<
             type: "string",
             enum: ["public", "package", "private"],
           },
+          treatSelfReferenceAs: {
+            type: "string",
+            enum: ["external", "internal"],
+          }
         },
         additionalProperties: false,
       },

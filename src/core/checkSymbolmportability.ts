@@ -34,17 +34,13 @@ export function checkSymbolImportability(
     return;
   }
 
-  if (packageOptions.treatSelfReferenceAs === "external") {
+  if (packageOptions.treatSelfReferenceAs === "external" && possibleSubpathImportFromPackage.test(moduleSpecifier)) {
     // Check whether this import is the result of a self-reference.
-    const match = possibleSubpathImportFromPackage.exec(moduleSpecifier);
-    if (match) {
-      const packageName = match[1];
-      const lookupResult = lookupPackageJson(importerFilename);
-      if (lookupResult !== null) {
-        if (lookupResult.packageJson.name === packageName) {
-          // This is a self-reference, so treat as external.
-          return;
-        }
+    const lookupResult = lookupPackageJson(importerFilename);
+    if (lookupResult !== null) {
+      if (checkIfImportIsSelfReference(moduleSpecifier, lookupResult.packageJson.name)) {
+        // This is a self-reference, so treat as external.
+        return;
       }
     }
   }
@@ -96,5 +92,10 @@ export function checkSymbolImportability(
   return inPackage ? undefined : "package";
 }
 
-const possibleSubpathImportFromPackage =
-  /^(?![./\\])([^/\\]*)(?:$|[/\\][^/\\])/;
+const possibleSubpathImportFromPackage = /^(?![./\\])([^/\\]*)(?:$|[/\\][^/\\])/;
+
+const checkIfImportIsSelfReference = (moduleSpecifier: string, packageName: string) => {
+  const importIsDefaultModule = moduleSpecifier === packageName
+  const importIsSubModule = moduleSpecifier.startsWith(`${packageName}/`)
+  return importIsDefaultModule || importIsSubModule
+}
