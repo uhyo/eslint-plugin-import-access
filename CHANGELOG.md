@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.1.2
+
+- fix bug check package incorrect on Windows (#15)
+
 ### 2.1.1
 
 - Fixed the `treatSelfReferenceAs` option to support scoped packages. (#13)
