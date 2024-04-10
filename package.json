@@ -5,6 +5,11 @@
   "main": "dist/index.js",
   "exports": {
     "./ts-plugin": "./dist/ts-plugin.js",
+    "./flat-config": {
+      "import": "./dist/flat-config.mjs",
+      "require": "./dist/flat-config.cjs",
+      "default": "./dist/flat-config.cjs"
+    },
     ".": "./dist/index.js"
   },
   "files": [
