@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.2.0
+
+- Support Flat Config (#20)
+
 ### 2.1.2
 
 - fix bug check package incorrect on Windows (#15)
@@ -8,7 +12,6 @@
 
 - Fixed the `treatSelfReferenceAs` option to support scoped packages. (#13)
 
-
 ### 2.1.0
 
 - Added a `treatSelfReferenceAs` option which allows you to treat self-references either like internal file or like external module. (#12)
@@ -16,6 +19,7 @@
 ### 2.0.0
 
 #### :warning: BREAKING CHANGES
+
 - Minimum supported TypeScript version is now 4.7 (previously 4.4)
 - Minimum supported Node.js version is now 16 (previously 14)
 
