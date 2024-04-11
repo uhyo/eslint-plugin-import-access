@@ -3,6 +3,15 @@
   "version": "2.1.2",
   "description": "ESLint rule for prohibiting package-private imports",
   "main": "dist/index.js",
+  "exports": {
+    "./ts-plugin": "./dist/ts-plugin.js",
+    "./flat-config": {
+      "import": "./dist/flat-config.mjs",
+      "require": "./dist/flat-config.cjs",
+      "default": "./dist/flat-config.cjs"
+    },
+    ".": "./dist/index.js"
+  },
   "files": [
     "dist",
     "!dist/__tests__"

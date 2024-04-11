@@ -20,6 +20,37 @@ This package solves this problem by providing a new directory-level layer and en
 npm i -D eslint-plugin-import-access
 ```
 
+Depending on how you configure ESLint, use either Flat Config or eslintrc to configure eslint-plugin-import-access.
+
+Also, you can enable the TypeScript Language Service Plugin by adding it to the `plugins` array in `tsconfig.json`.
+
+### Flat Config
+
+In **eslint.config.js**:
+
+```js
+import importAccess from "eslint-plugin-import-access/flat-config";
+
+export default [
+  // other settings...
+  // (you also need to set up typescript-eslint)
+  {
+    plugins: {
+      "import-access": importAccess,
+    },
+  },
+  {
+    rules: {
+      "import-access/jsdoc": ["error"],
+    },
+  },
+];
+```
+
+_Note: currently you need to import the plugin from the `/flat-config` subpath. In a future version, this will be simplified._
+
+### eslintrc
+
 In **.eslintrc.js**:
 
 ```js
@@ -31,6 +62,8 @@ In **.eslintrc.js**:
     "import-access/jsdoc": ["error"],
   }
 ```
+
+### TypeScript Language Service Plugin
 
 In **tsconfig.json**:
 
