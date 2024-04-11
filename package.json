@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-import-access",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "ESLint rule for prohibiting package-private imports",
   "main": "dist/index.js",
   "exports": {
