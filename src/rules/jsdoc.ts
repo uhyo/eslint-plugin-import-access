@@ -43,7 +43,8 @@ const jsdocRule: Omit<
       url: "TODO",
     },
     messages: {
-      "no-program": "Cannot retrieve TypeScript program for this file.",
+      "no-program":
+        "Type information is not available for this file. See https://typescript-eslint.io/getting-started/typed-linting/ for how to set this up.",
       package: "Cannot import a package-private export '{{ identifier }}'",
       "package:reexport":
         "Cannot re-export a package-private export '{{ identifier }}'",
@@ -68,7 +69,7 @@ const jsdocRule: Omit<
           treatSelfReferenceAs: {
             type: "string",
             enum: ["external", "internal"],
-          }
+          },
         },
         additionalProperties: false,
       },

@@ -29,11 +29,21 @@ Also, you can enable the TypeScript Language Service Plugin by adding it to the 
 In **eslint.config.js**:
 
 ```js
+import typescriptEslintParser from "@typescript-eslint/parser";
 import importAccess from "eslint-plugin-import-access/flat-config";
 
 export default [
   // other settings...
-  // (you also need to set up typescript-eslint)
+  {
+    // set up typescript-eslint
+    languageOptions: {
+      parser: typescriptEslintParser,
+      parserOptions: {
+        project: true,
+        sourceType: "module",
+      },
+    },
+  },
   {
     plugins: {
       "import-access": importAccess,
@@ -54,6 +64,12 @@ _Note: currently you need to import the plugin from the `/flat-config` subpath. 
 In **.eslintrc.js**:
 
 ```js
+  // set up typescript-eslint
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": true,
+    "sourceType": "module"
+  },
   "plugins": [
     "import-access",
     // ...
