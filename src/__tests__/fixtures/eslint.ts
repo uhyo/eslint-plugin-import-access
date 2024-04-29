@@ -9,10 +9,11 @@ class ESLintTester {
   #projectRoot: string;
   #linter: TSESLint.Linter;
   #program: Program;
-  constructor(projectRoot: string) {
+  constructor(projectRoot: string, flatConfig: boolean) {
     this.#projectRoot = projectRoot;
     this.#linter = new TSESLint.Linter({
       cwd: this.#projectRoot,
+      configType: "eslintrc",
     });
     this.#program = parser.createProgram("./tsconfig.json", projectRoot);
 
@@ -25,7 +26,7 @@ class ESLintTester {
    */
   async lintFile(
     filePath: string,
-    rules?: Partial<{ jsdoc: Partial<JSDocRuleOptions> }>
+    rules?: Partial<{ jsdoc: Partial<JSDocRuleOptions> }>,
   ) {
     const fileAbsolutePath = path.join(this.#projectRoot, filePath);
     const code = await readFile(fileAbsolutePath, {
@@ -49,7 +50,7 @@ class ESLintTester {
       },
       {
         filename: fileAbsolutePath,
-      }
+      },
     );
   }
 }
@@ -60,5 +61,6 @@ let cache: ESLintTester | undefined;
  */
 export function getESLintTester(): ESLintTester {
   const projectRoot = path.resolve(__dirname, "project");
-  return (cache ||= new ESLintTester(projectRoot));
+  const flatConfig = !!process.env.TEST_FLAT_CONFIG;
+  return (cache ||= new ESLintTester(projectRoot, flatConfig));
 }
