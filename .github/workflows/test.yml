@@ -20,6 +20,10 @@ jobs:
             ts-eslint-version: 7
           - node-version: 16
             eslint-version: 9
+          - ts-version: "5.0"
+            ts-eslint-version: 5
+          - ts-version: "5.0"
+            ts-eslint-version: 6
           - ts-version: "5.4"
             ts-eslint-version: 5
           - ts-version: "5.4"
