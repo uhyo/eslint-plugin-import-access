@@ -34,7 +34,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@typescript-eslint/utils": "^6.2.0",
+    "@typescript-eslint/utils": "^7.7.1",
     "tsutils": "^3.21.0"
   },
   "devDependencies": {
@@ -48,9 +48,9 @@
     "@fixture-package-workspace/missing-entrypoint": "*",
     "@fixture-package-workspace/with-exports-field": "*",
     "@types/jest": "^29.5.3",
-    "@typescript-eslint/eslint-plugin": "^6.2.0",
-    "@typescript-eslint/parser": "^6.2.0",
-    "@typescript-eslint/typescript-estree": "^6.2.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "@typescript-eslint/typescript-estree": "^7.7.1",
     "babel-jest": "^29.6.1",
     "eslint": "^8.7.0",
     "eslint-plugin-local-rules": "^1.1.0",
