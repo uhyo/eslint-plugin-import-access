@@ -3,6 +3,7 @@ import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
 import { Program } from "typescript";
+import flatPlugin from "../../flat-config.cjs";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
 interface ESLintTester {
@@ -40,6 +41,7 @@ class FlatESLintTester implements ESLintTester {
     return this.#linter.verify(
       code,
       {
+        files: ["**/*.ts"],
         languageOptions: {
           parser,
           parserOptions: {
@@ -52,7 +54,7 @@ class FlatESLintTester implements ESLintTester {
         },
         plugins: {
           // @ts-expect-error FIXME: need support from typescript-eslint
-          "import-access": { jsdoc: jsdocRule },
+          "import-access": flatPlugin,
         },
         rules: {
           "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
