@@ -14,6 +14,13 @@ jobs:
         node-version: [16, 18, 20, 22]
         ts-version: ["4.7", "5.0", "5.4"]
         ts-eslint-version: [5, 6, 7]
+        eslint-version: [8, 9]
+        # to be removed in next major release
+        exclude:
+          - node-version: 16
+            ts-eslint-version: 7
+          - node-version: 16
+            eslint-version: 9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -31,6 +38,8 @@ jobs:
       - run: npm run lint
       - run: |
           npm install -D typescript@${{ matrix.ts-version }} \
+            eslint@${{ matrix.eslint-version }} \
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }}
+          npm install @typescript-eslint/utils@${{ matrix.ts-eslint-version }}
       - run: npm test
