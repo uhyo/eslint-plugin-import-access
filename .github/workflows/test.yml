@@ -42,5 +42,6 @@ jobs:
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
             --legacy-peer-deps
-          npm install @typescript-eslint/utils@${{ matrix.ts-eslint-version }}
+          npm install @typescript-eslint/utils@${{ matrix.ts-eslint-version }} \
+            --legacy-peer-deps
       - run: npm test
