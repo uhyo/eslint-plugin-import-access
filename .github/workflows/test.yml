@@ -13,15 +13,15 @@ jobs:
       matrix:
         node-version: [16, 18, 20, 22]
         ts-version: ["4.7", "5.0", "5.4"]
-        ts-eslint-version: [6, 7]
+        ts-eslint-version: [5, 6, 7]
         eslint-version: [8, 9]
         exclude:
           - node-version: 16
             ts-eslint-version: 7
           - node-version: 16
             eslint-version: 9
-          - ts-version: "5.0"
-            ts-eslint-version: 6
+          - ts-version: "5.4"
+            ts-eslint-version: 5
           - ts-version: "5.4"
             ts-eslint-version: 6
 
@@ -45,7 +45,5 @@ jobs:
             eslint@${{ matrix.eslint-version }} \
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
-            --legacy-peer-deps
-          npm install @typescript-eslint/utils@${{ matrix.ts-eslint-version }} \
             --legacy-peer-deps
       - run: npm test
