@@ -11,10 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18, 20]
-        npm-version: [9]
-        ts-version: ["4.7", "5.0", "5.1"]
+        node-version: [16, 18, 20, 22]
+        ts-version: ["4.7", "5.0", "5.4"]
         ts-eslint-version: [5, 6, 7]
+        eslint-version: [8, 9]
+        flat-config: ["true", ""]
+        exclude:
+          - eslint-version: 8
+            flat-config: "true"
+          - node-version: 16
+            ts-eslint-version: 7
+          - node-version: 16
+            eslint-version: 9
+          - ts-version: "5.4"
+            ts-eslint-version: 5
+          - ts-version: "5.4"
+            ts-eslint-version: 6
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -27,14 +40,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm i -g npm@${{ matrix.npm-version }}
       - run: npm ci
       - run: npm run build
       - run: npm run lint
       - run: |
           npm install -D typescript@${{ matrix.ts-version }} \
+            eslint@${{ matrix.eslint-version }} \
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
-            @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
-            @typescript-eslint/parser@${{ matrix.ts-eslint-version }}
+            --legacy-peer-deps
       - run: npm test
+        env:
+          TEST_FLAT_CONFIG: ${{ matrix.flat-config }}
