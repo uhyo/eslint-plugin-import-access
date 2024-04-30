@@ -105,7 +105,7 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
-        const sourceFilename = context.getFilename();
+        const sourceFilename = context.filename;
         if (!sourceFilename) {
           return;
         }
@@ -148,7 +148,7 @@ const jsdocRule: Omit<
         }
       },
       ImportDefaultSpecifier(node) {
-        const sourceFilename = context.getFilename();
+        const sourceFilename = context.filename;
         if (!sourceFilename) {
           return;
         }
@@ -193,7 +193,7 @@ const jsdocRule: Omit<
         }
       },
       ExportSpecifier(node) {
-        const sourceFilename = context.getFilename();
+        const sourceFilename = context.filename;
         if (!sourceFilename) {
           return;
         }
