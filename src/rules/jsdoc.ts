@@ -84,7 +84,8 @@ const jsdocRule: Omit<
     },
   ],
   create(context) {
-    const { parserServices, options } = context;
+    const { options, sourceCode } = context;
+    const { parserServices } = sourceCode;
     if (!parserServices) {
       return {};
     }
@@ -109,7 +110,7 @@ const jsdocRule: Omit<
           return;
         }
 
-        if (parserServices.program === null) {
+        if (parserServices.program == null) {
           context.report({
             node,
             messageId: "no-program",
@@ -119,12 +120,11 @@ const jsdocRule: Omit<
 
         const checker = parserServices.program.getTypeChecker();
 
-        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        // if (shouldSkip) {
-        //   return;
-        // }
-
-        parserServices;
+        if (parserServices.esTreeNodeToTSNodeMap == null) {
+          throw new Error(
+            "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
+          );
+        }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
 
@@ -153,7 +153,7 @@ const jsdocRule: Omit<
           return;
         }
 
-        if (parserServices.program === null) {
+        if (parserServices.program == null) {
           context.report({
             node,
             messageId: "no-program",
@@ -163,10 +163,11 @@ const jsdocRule: Omit<
 
         const checker = parserServices.program.getTypeChecker();
 
-        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        // if (shouldSkip) {
-        //   return;
-        // }
+        if (parserServices.esTreeNodeToTSNodeMap == null) {
+          throw new Error(
+            "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
+          );
+        }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
         if (!tsNode.name) {
@@ -197,7 +198,7 @@ const jsdocRule: Omit<
           return;
         }
 
-        if (parserServices.program === null) {
+        if (parserServices.program == null) {
           context.report({
             node,
             messageId: "no-program",
@@ -207,10 +208,11 @@ const jsdocRule: Omit<
 
         const checker = parserServices.program.getTypeChecker();
 
-        // const shouldSkip = shouldSkipSymbolCheck(node, sourceFilename);
-        // if (shouldSkip) {
-        //   return;
-        // }
+        if (parserServices.esTreeNodeToTSNodeMap == null) {
+          throw new Error(
+            "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
+          );
+        }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
 
