@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.2.1
+
+- Support ESLint V9 (#33)
+
 ### 2.2.0
 
 - Support Flat Config (#20)
