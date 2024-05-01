@@ -138,7 +138,7 @@ You can set default importability value that applies to the entire project.
 
 For example, i you set the default importability to `package`, any export without JSDoc annotation is treated as `@package`.
 
-You can override this default value by adding JSDoc annotation to the export. To make an export public, add `@public` annotation. 
+You can override this default value by adding JSDoc annotation to the export. To make an export public, add `@public` annotation.
 
 **Example:**
 
@@ -149,11 +149,11 @@ You can override this default value by adding JSDoc annotation to the export. To
 export const pika = "chu"; // no JSDoc, but automatically applied @package
 
 // ----- sub/foo.ts
-// you can import 
+// you can import
 import { pika } from "./bar";
 
 // ----- bar2.ts
-// you cannot import because pika is @package 
+// you cannot import because pika is @package
 import { pika } from "./sub/bar`;
 ```
 

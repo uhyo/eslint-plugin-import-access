@@ -7,7 +7,7 @@ export type JSDocAccess = "public" | "package" | "private";
  */
 export function getAccessOfJsDocs(
   tags: readonly Tag[],
-  defaultImportability: JSDocAccess
+  defaultImportability: JSDocAccess,
 ): JSDocAccess {
   for (const tag of tags) {
     const tagName = tag.name;

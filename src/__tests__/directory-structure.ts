@@ -5,7 +5,7 @@ const tester = getESLintTester();
 describe("directory structure", () => {
   it("Canot import from subsub directory", async () => {
     const result = await tester.lintFile(
-      "src/directory-structure/subsubUser.ts"
+      "src/directory-structure/subsubUser.ts",
     );
     expect(result).toMatchInlineSnapshot(`
 Array [
@@ -25,19 +25,19 @@ Array [
   });
   it("Can import from sub/index.ts", async () => {
     const result = await tester.lintFile(
-      "src/directory-structure/subIndexUser.ts"
+      "src/directory-structure/subIndexUser.ts",
     );
     expect(result).toEqual([]);
   });
   it("Can import from ../pkg", async () => {
     const result = await tester.lintFile(
-      "src/directory-structure/sub/sub2/parentUser.ts"
+      "src/directory-structure/sub/sub2/parentUser.ts",
     );
     expect(result).toEqual([]);
   });
   it("Cannot import from sibling sub-package", async () => {
     const result = await tester.lintFile(
-      "src/directory-structure/sub/sub3/siblingUser.ts"
+      "src/directory-structure/sub/sub3/siblingUser.ts",
     );
     expect(result).toMatchInlineSnapshot(`
 Array [

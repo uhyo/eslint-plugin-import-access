@@ -45,7 +45,7 @@ Array [
   });
   it("Cannot re-export a package-private variable", async () => {
     const result = await tester.lintFile(
-      "src/reexport4/indexLoophole/reexportFromSubFoo.ts"
+      "src/reexport4/indexLoophole/reexportFromSubFoo.ts",
     );
     expect(result).toMatchInlineSnapshot(`
 Array [
@@ -65,7 +65,7 @@ Array [
   });
   it("Can re-export a variable exported from index.ts", async () => {
     const result = await tester.lintFile(
-      "src/reexport4/indexLoophole/reexportFromSubIndex.ts"
+      "src/reexport4/indexLoophole/reexportFromSubIndex.ts",
     );
     expect(result).toMatchInlineSnapshot(`Array []`);
   });
@@ -110,7 +110,7 @@ Array [
           jsdoc: {
             indexLoophole: false,
           },
-        }
+        },
       );
       expect(result).toMatchInlineSnapshot(`
 Array [
@@ -161,7 +161,7 @@ Array [
             indexLoophole: false,
             filenameLoophole: true,
           },
-        }
+        },
       );
       expect(result).toMatchInlineSnapshot(`Array []`);
     });
@@ -173,7 +173,7 @@ Array [
             indexLoophole: false,
             filenameLoophole: true,
           },
-        }
+        },
       );
       expect(result).toMatchInlineSnapshot(`
 Array [

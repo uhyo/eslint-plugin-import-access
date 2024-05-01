@@ -34,11 +34,19 @@ export function checkSymbolImportability(
     return;
   }
 
-  if (packageOptions.treatSelfReferenceAs === "external" && possibleSubpathImportFromPackage.test(moduleSpecifier)) {
+  if (
+    packageOptions.treatSelfReferenceAs === "external" &&
+    possibleSubpathImportFromPackage.test(moduleSpecifier)
+  ) {
     // Check whether this import is the result of a self-reference.
     const lookupResult = lookupPackageJson(importerFilename);
     if (lookupResult !== null) {
-      if (checkIfImportIsSelfReference(moduleSpecifier, lookupResult.packageJson.name)) {
+      if (
+        checkIfImportIsSelfReference(
+          moduleSpecifier,
+          lookupResult.packageJson.name,
+        )
+      ) {
         // This is a self-reference, so treat as external.
         return;
       }
@@ -92,10 +100,14 @@ export function checkSymbolImportability(
   return inPackage ? undefined : "package";
 }
 
-const possibleSubpathImportFromPackage = /^(?![./\\])([^/\\]*)(?:$|[/\\][^/\\])/;
+const possibleSubpathImportFromPackage =
+  /^(?![./\\])([^/\\]*)(?:$|[/\\][^/\\])/;
 
-const checkIfImportIsSelfReference = (moduleSpecifier: string, packageName: string) => {
-  const importIsDefaultModule = moduleSpecifier === packageName
-  const importIsSubModule = moduleSpecifier.startsWith(`${packageName}/`)
-  return importIsDefaultModule || importIsSubModule
-}
+const checkIfImportIsSelfReference = (
+  moduleSpecifier: string,
+  packageName: string,
+) => {
+  const importIsDefaultModule = moduleSpecifier === packageName;
+  const importIsSubModule = moduleSpecifier.startsWith(`${packageName}/`);
+  return importIsDefaultModule || importIsSubModule;
+};
