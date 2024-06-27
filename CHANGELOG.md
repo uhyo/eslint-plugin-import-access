@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.2.2
+
+- fix typing incompatibility with typescript-eslint (#49)
+
 ### 2.2.1
 
 - Support ESLint V9 (#33)
