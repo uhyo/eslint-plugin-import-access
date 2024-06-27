@@ -3,7 +3,7 @@ import { tsServerPluginInit } from "./ts-server-plugin";
 
 const eslintRule = {
   rules: {
-    jsdoc: jsdoc as unknown,
+    jsdoc,
   },
   configs: {
     all: {
