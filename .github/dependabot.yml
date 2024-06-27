@@ -10,16 +10,16 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      - minors:
-          dependency-type: "production"
-          update-types:
-            - "minor"
-            - "patch"
-      - minors-dev:
-          dependency-type: "development"
-          update-types:
-            - "minor"
-            - "patch"
+      minors:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      minors-dev:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
