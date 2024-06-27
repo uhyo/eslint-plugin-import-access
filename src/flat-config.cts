@@ -1,5 +1,4 @@
 import type { TSESLint } from "@typescript-eslint/utils";
-import {} from "@typescript-eslint/utils";
 import jsdoc from "./rules/jsdoc";
 
 /**
