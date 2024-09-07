@@ -24,7 +24,6 @@ class FlatESLintTester implements ESLintTester {
     this.#projectRoot = projectRoot;
     this.#linter = new TSESLint.Linter({
       cwd: this.#projectRoot,
-      // @ts-expect-error FIXME: need support from typescript-eslint
       configType: "flat",
     });
     this.#program = parser.createProgram("./tsconfig.json", projectRoot);
@@ -53,7 +52,6 @@ class FlatESLintTester implements ESLintTester {
           },
         },
         plugins: {
-          // @ts-expect-error FIXME: need support from typescript-eslint
           "import-access": flatPlugin,
         },
         rules: {
@@ -75,7 +73,6 @@ class LegacyESLintTester implements ESLintTester {
     this.#projectRoot = projectRoot;
     this.#linter = new TSESLint.Linter({
       cwd: this.#projectRoot,
-      // @ts-expect-error FIXME: need support from typescript-eslint
       configType: "eslintrc",
     });
     this.#program = parser.createProgram("./tsconfig.json", projectRoot);
