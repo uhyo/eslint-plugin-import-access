@@ -1,0 +1,4 @@
+/**
+ * @private
+ */
+export * from "./foo";

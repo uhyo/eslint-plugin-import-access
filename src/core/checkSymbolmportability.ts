@@ -63,6 +63,7 @@ export function checkSymbolImportability(
     })),
     getJSDocTags(decl),
   );
+  debugger;
   if (!jsDocs) {
     switch (packageOptions.defaultImportability) {
       case "public":
