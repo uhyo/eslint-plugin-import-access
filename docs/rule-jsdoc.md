@@ -193,7 +193,7 @@ When `treatSelfReferenceAs: internal`, this import is disallowed because import 
 
 _Default value: `[]`_
 
-An array of glob patterns for source paths to exclude from the importability check. When importing from a module that matches one of these patterns, the import-access/jsdoc rule will not apply any restrictions, regardless of the JSDoc annotations or defaultImportability setting.
+An array of glob patterns for source paths to exclude from the importability check. The patterns are resolved relative to the project root. When importing from a module that matches one of these patterns, the import-access/jsdoc rule will not apply any restrictions, regardless of the JSDoc annotations or defaultImportability setting.
 
 This is particularly useful for handling imports from auto-generated files that don't have proper JSDoc annotations.
 
