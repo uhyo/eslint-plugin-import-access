@@ -14,7 +14,8 @@ As a bonus feature, importing exports annotated with `@private` is always forbid
       "indexLoophole": true,
       "filenameLoophole": false,
       "defaultImportability": "public", // "public" | "package" | "private"
-      "treatSelfReferenceAs": "external" // "internal" | "external"
+      "treatSelfReferenceAs": "external", // "internal" | "external"
+      "excludeSourcePatterns": ["generated/**/*"] // Array of glob patterns for source paths to exclude
     }],
   }
 ```
@@ -49,6 +50,7 @@ type JSDocRuleOptions = {
   filenameLoophole: boolean;
   defaultImportability: "public" | "pacakge" | "private";
   treatSelfReferenceAs: "internal" | "external";
+  excludeSourcePatterns?: string[];
 };
 ```
 
@@ -186,3 +188,56 @@ In the above example, `my-package/foo` is a self reference that connects to `src
 When `treatSelfReferenceAs: external`, this import is always allowed even though `something` is a package-private export because it is treated like an import from an external package.
 
 When `treatSelfReferenceAs: internal`, this import is disallowed because import from `my-package/foo` is treated like an import from `src/somewhere/foo.ts`.
+
+### `excludeSourcePatterns`
+
+_Default value: `[]`_
+
+An array of glob patterns for source paths to exclude from the importability check. When importing from a module that matches one of these patterns, the import-access/jsdoc rule will not apply any restrictions, regardless of the JSDoc annotations or defaultImportability setting.
+
+This is particularly useful for handling imports from auto-generated files that don't have proper JSDoc annotations.
+
+The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax.
+
+**Examples:**
+
+```ts
+// Example: Match by file path
+// excludeSourcePatterns: ["src/types/**/*.d.ts"]
+import { typeDefinition } from "../types/api"; // Allowed if the implementation is in a .d.ts file in the src/types directory
+```
+
+Additional examples:
+```js
+// Match all files in a particular directory
+"src/generated/**"
+
+// Match multiple extensions
+"**/*.{generated,auto}.{ts,js}"
+
+// Match files with specific naming patterns
+"**/[a-z]*.auto.ts"
+
+// Match specific type definition files
+"src/**/*.d.ts"
+```
+
+
+**Next.js specific configuration:**
+
+When working with Next.js projects, it's recommended to exclude the `.next` directory which contains auto-generated files:
+
+```js
+// In your .eslintrc.js
+{
+  "rules": {
+    "import-access/jsdoc": ["error", {
+      // ... other options ...
+      "excludeSourcePatterns": [".next/**"]
+    }]
+  }
+}
+```
+
+This will ensure that any imports from auto-generated files in the `.next` directory are not subject to import-access restrictions.
+
