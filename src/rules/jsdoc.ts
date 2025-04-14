@@ -30,6 +30,11 @@ export type JSDocRuleOptions = {
    * the importability check.
    */
   treatSelfReferenceAs: "internal" | "external";
+  /**
+   * Array of glob patterns for source paths to exclude from the importability check.
+   * Useful for excluding generated files or auto-generated type definitions.
+   */
+  excludeSourcePatterns?: string[];
 };
 
 const jsdocRule: Omit<
@@ -70,6 +75,12 @@ const jsdocRule: Omit<
             type: "string",
             enum: ["external", "internal"],
           },
+          excludeSourcePatterns: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
         },
         additionalProperties: false,
       },
@@ -81,6 +92,7 @@ const jsdocRule: Omit<
       filenameLoophole: false,
       defaultImportability: "public",
       treatSelfReferenceAs: "external",
+      excludeSourcePatterns: [],
     },
   ],
   create(context) {
@@ -94,6 +106,7 @@ const jsdocRule: Omit<
       filenameLoophole,
       defaultImportability,
       treatSelfReferenceAs,
+      excludeSourcePatterns,
     } = jsDocRuleDefaultOptions(options[0]);
 
     const packageOptions: PackageOptions = {
@@ -101,6 +114,7 @@ const jsdocRule: Omit<
       filenameLoophole,
       defaultImportability,
       treatSelfReferenceAs,
+      excludeSourcePatterns,
     };
 
     return {
@@ -249,12 +263,14 @@ export function jsDocRuleDefaultOptions(
     filenameLoophole = false,
     defaultImportability = "public",
     treatSelfReferenceAs = "external",
+    excludeSourcePatterns = [],
   } = options || {};
   return {
     indexLoophole,
     filenameLoophole,
     defaultImportability,
     treatSelfReferenceAs,
+    excludeSourcePatterns,
   };
 }
 

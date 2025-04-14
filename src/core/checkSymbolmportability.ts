@@ -1,3 +1,5 @@
+import { minimatch } from "minimatch";
+import path from "path";
 import { Program, Symbol } from "typescript";
 import { assertNever } from "../utils/assertNever";
 import { concatArrays } from "../utils/concatArrays";
@@ -27,6 +29,25 @@ export function checkSymbolImportability(
   const decl = findExportedDeclaration(rawDecl);
   if (!decl) {
     return;
+  }
+
+  // Get the actual file name of the exported declaration
+  const exporterFilename = decl.getSourceFile().fileName;
+
+  // Check if moduleSpecifier or exporter file path matches any of the excludeSourcePatterns
+  if (packageOptions.excludeSourcePatterns?.length) {
+    for (const pattern of packageOptions.excludeSourcePatterns) {
+      // Check actual file path
+      // Get relative path from the project root
+      const projectPath = program.getCurrentDirectory();
+      const relativePath = path.relative(projectPath, exporterFilename);
+
+      // Check if the file path matches the pattern
+      if (minimatch(relativePath, pattern, { dot: true })) {
+        // Skip importability check for this source
+        return;
+      }
+    }
   }
 
   // If declaration is from external module, treat as importable

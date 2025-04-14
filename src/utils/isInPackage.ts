@@ -5,6 +5,7 @@ export type PackageOptions = {
   readonly filenameLoophole: boolean;
   readonly defaultImportability: "public" | "package" | "private";
   readonly treatSelfReferenceAs: "internal" | "external";
+  readonly excludeSourcePatterns?: readonly string[];
 };
 
 // ../ or ../../ or ...
