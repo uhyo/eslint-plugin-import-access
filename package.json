@@ -20,8 +20,8 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "eslint src/**/*.ts",
-    "test": "tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit && jest",
-    "test:watch": "jest --watch"
+    "test": "tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit && vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "eslint",
@@ -48,18 +48,17 @@
     "@fixture-package-workspace/has-sub-module": "*",
     "@fixture-package-workspace/missing-entrypoint": "*",
     "@fixture-package-workspace/with-exports-field": "*",
-    "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
     "@typescript-eslint/typescript-estree": "^8.4.0",
-    "babel-jest": "^29.6.1",
+    "@vitest/expect": "^3.1.1",
     "eslint": "^8.7.0",
     "eslint-plugin-local-rules": "^3.0.2",
     "espree": "^10.0.1",
-    "jest": "^29.6.1",
     "prettier": "^3.2.5",
     "typescript": "^5.1.6",
-    "typescript-eslint": "^8.4.0"
+    "typescript-eslint": "^8.4.0",
+    "vitest": "^3.1.1"
   },
   "workspaces": [
     "src/__tests__/fixtures/packages/workspaces/*"

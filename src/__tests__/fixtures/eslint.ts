@@ -3,8 +3,9 @@ import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
 import { Program } from "typescript";
-import flatPlugin from "../../flat-config.cjs";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
+
+let flatPlugin: TSESLint.FlatConfig.Plugin | undefined;
 
 interface ESLintTester {
   /**
@@ -36,6 +37,8 @@ class FlatESLintTester implements ESLintTester {
     const code = await readFile(fileAbsolutePath, {
       encoding: "utf8",
     });
+    // dynamic import to avoid require(ESM)
+    flatPlugin ??= (await import("../../flat-config.mjs")).default;
 
     return this.#linter.verify(
       code,
