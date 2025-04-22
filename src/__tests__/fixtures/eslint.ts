@@ -5,7 +5,11 @@ import path from "path";
 import { Program } from "typescript";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
-let flatPlugin: TSESLint.FlatConfig.Plugin | undefined;
+const flatPlugin = {
+  rules: {
+    jsdoc: jsdocRule,
+  },
+};
 
 interface ESLintTester {
   /**
@@ -37,8 +41,6 @@ class FlatESLintTester implements ESLintTester {
     const code = await readFile(fileAbsolutePath, {
       encoding: "utf8",
     });
-    // dynamic import to avoid require(ESM)
-    flatPlugin ??= (await import("../../flat-config.mjs")).default;
 
     return this.#linter.verify(
       code,
