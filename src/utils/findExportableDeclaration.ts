@@ -11,39 +11,70 @@ import {
   SyntaxKind,
 } from "typescript";
 
+// Debug logging function
+function debugLog(...args: any[]): void {
+  console.log("[DEBUG:findExportableDeclaration.ts]", ...args);
+}
+
 /**
  * Go up AST nodes until it reaches an exported statement-like node.
  */
 export function findExportedDeclaration(node: Node) {
+  debugLog("findExportedDeclaration called for node kind:", node.kind);
+
   const decl = findExportableDeclaration(node);
   if (!decl) {
+    debugLog("No exportable declaration found");
     return;
   }
 
+  debugLog("Found exportable declaration of kind:", decl.kind);
+
   if (isExportDeclaration(decl) || isExportAssignment(decl)) {
+    debugLog("Declaration is an export declaration or assignment");
     return decl;
   }
 
-  if (!decl.modifiers?.find((m) => m.kind === SyntaxKind.ExportKeyword)) {
+  const hasExportModifier = decl.modifiers?.find(
+    (m) => m.kind === SyntaxKind.ExportKeyword,
+  );
+  if (!hasExportModifier) {
+    debugLog("Declaration does not have export modifier");
     return;
   }
+
+  debugLog("Found exported declaration");
   return decl;
 }
 
 function findExportableDeclaration(node: Node) {
-  while (node && !isSourceFile(node)) {
+  debugLog("findExportableDeclaration called for node kind:", node.kind);
+
+  let currentNode = node;
+  let depth = 0;
+
+  while (currentNode && !isSourceFile(currentNode)) {
+    debugLog(`Checking node at depth ${depth}, kind:`, currentNode.kind);
+
     if (
-      isFunctionDeclaration(node) ||
-      isClassDeclaration(node) ||
-      isVariableStatement(node) ||
-      isExportDeclaration(node) ||
-      isExportAssignment(node) ||
-      isTypeAliasDeclaration(node) ||
-      isInterfaceDeclaration(node)
+      isFunctionDeclaration(currentNode) ||
+      isClassDeclaration(currentNode) ||
+      isVariableStatement(currentNode) ||
+      isExportDeclaration(currentNode) ||
+      isExportAssignment(currentNode) ||
+      isTypeAliasDeclaration(currentNode) ||
+      isInterfaceDeclaration(currentNode)
     ) {
-      return node;
+      debugLog("Found exportable declaration of kind:", currentNode.kind);
+      return currentNode;
     }
-    node = node.parent;
+
+    currentNode = currentNode.parent;
+    depth++;
   }
+
+  debugLog(
+    "Reached source file or null without finding exportable declaration",
+  );
   return undefined;
 }

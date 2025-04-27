@@ -4,6 +4,11 @@ import { isStringLiteral } from "typescript";
 import { checkSymbolImportability } from "../core/checkSymbolmportability.js";
 import type { PackageOptions } from "../utils/isInPackage.js";
 
+// Debug logging function
+function debugLog(...args: any[]): void {
+  console.log("[DEBUG:jsdoc.ts]", ...args);
+}
+
 type MessageId =
   | "no-program"
   | "package"
@@ -120,12 +125,21 @@ const jsdocRule: Omit<
 
     return {
       ImportSpecifier(node) {
+        debugLog("ImportSpecifier handler called", {
+          filename: context.filename,
+          node: node.type,
+          imported: node.imported?.name,
+          local: node.local?.name,
+        });
+
         const sourceFilename = context.filename;
         if (!sourceFilename) {
+          debugLog("No source filename, returning");
           return;
         }
 
         if (parserServices.program == null) {
+          debugLog("No program in parserServices");
           context.report({
             node,
             messageId: "no-program",
@@ -136,20 +150,27 @@ const jsdocRule: Omit<
         const checker = parserServices.program.getTypeChecker();
 
         if (parserServices.esTreeNodeToTSNodeMap == null) {
+          debugLog("No esTreeNodeToTSNodeMap in parserServices");
           throw new Error(
             "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
           );
         }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        debugLog("Got TS node", { kind: tsNode.kind });
 
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          debugLog("Found symbol", { name: symbol.name, flags: symbol.flags });
+
           const moduleSpecifier = tsNode.parent.parent.parent.moduleSpecifier;
           if (!isStringLiteral(moduleSpecifier)) {
             // Should not happen (as of TS 5.1)
+            debugLog("Module specifier is not a string literal");
             return;
           }
+
+          debugLog("Module specifier", moduleSpecifier.text);
 
           checkSymbol(
             context,
@@ -160,15 +181,25 @@ const jsdocRule: Omit<
             moduleSpecifier.text,
             symbol,
           );
+        } else {
+          debugLog("No symbol found for node");
         }
       },
       ImportDefaultSpecifier(node) {
+        debugLog("ImportDefaultSpecifier handler called", {
+          filename: context.filename,
+          node: node.type,
+          local: node.local?.name,
+        });
+
         const sourceFilename = context.filename;
         if (!sourceFilename) {
+          debugLog("No source filename, returning");
           return;
         }
 
         if (parserServices.program == null) {
+          debugLog("No program in parserServices");
           context.report({
             node,
             messageId: "no-program",
@@ -179,22 +210,32 @@ const jsdocRule: Omit<
         const checker = parserServices.program.getTypeChecker();
 
         if (parserServices.esTreeNodeToTSNodeMap == null) {
+          debugLog("No esTreeNodeToTSNodeMap in parserServices");
           throw new Error(
             "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
           );
         }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        debugLog("Got TS node", { kind: tsNode.kind });
+
         if (!tsNode.name) {
+          debugLog("No name in TS node");
           return;
         }
+
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          debugLog("Found symbol", { name: symbol.name, flags: symbol.flags });
+
           const moduleSpecifier = tsNode.parent.moduleSpecifier;
           if (!isStringLiteral(moduleSpecifier)) {
             // Should not happen (as of TS 5.1)
+            debugLog("Module specifier is not a string literal");
             return;
           }
+
+          debugLog("Module specifier", moduleSpecifier.text);
 
           checkSymbol(
             context,
@@ -205,15 +246,26 @@ const jsdocRule: Omit<
             moduleSpecifier.text,
             symbol,
           );
+        } else {
+          debugLog("No symbol found for node");
         }
       },
       ExportSpecifier(node) {
+        debugLog("ExportSpecifier handler called", {
+          filename: context.filename,
+          node: node.type,
+          exported: node.exported?.name,
+          local: node.local?.name,
+        });
+
         const sourceFilename = context.filename;
         if (!sourceFilename) {
+          debugLog("No source filename, returning");
           return;
         }
 
         if (parserServices.program == null) {
+          debugLog("No program in parserServices");
           context.report({
             node,
             messageId: "no-program",
@@ -224,19 +276,26 @@ const jsdocRule: Omit<
         const checker = parserServices.program.getTypeChecker();
 
         if (parserServices.esTreeNodeToTSNodeMap == null) {
+          debugLog("No esTreeNodeToTSNodeMap in parserServices");
           throw new Error(
             "This rule requires the parser to provide the esTreeNodeToTSNodeMap in parserServices",
           );
         }
 
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        debugLog("Got TS node", { kind: tsNode.kind });
 
         const symbol = checker.getSymbolAtLocation(tsNode.name);
         if (symbol) {
+          debugLog("Found symbol", { name: symbol.name, flags: symbol.flags });
+
           const moduleSpecifier = tsNode.parent.parent.moduleSpecifier;
           if (!moduleSpecifier || !isStringLiteral(moduleSpecifier)) {
+            debugLog("No module specifier or not a string literal");
             return;
           }
+
+          debugLog("Module specifier", moduleSpecifier.text);
 
           checkSymbol(
             context,
@@ -248,6 +307,8 @@ const jsdocRule: Omit<
             symbol,
             true,
           );
+        } else {
+          debugLog("No symbol found for node");
         }
       },
     };
@@ -285,11 +346,27 @@ function checkSymbol(
   symbol: Symbol,
   reexport = false,
 ) {
+  debugLog("checkSymbol called", {
+    filename: context.filename,
+    moduleSpecifier,
+    symbolName: symbol.name,
+    reexport,
+  });
+
   const checker = program.getTypeChecker();
   const exsy = checker.getImmediateAliasedSymbol(symbol);
+
   if (!exsy) {
+    debugLog("No aliased symbol found for", symbol.name);
     return;
   }
+
+  debugLog("Aliased symbol found", {
+    name: exsy.name,
+    flags: exsy.flags,
+    declarations: exsy.declarations?.length,
+  });
+
   const checkResult = checkSymbolImportability(
     packageOptions,
     program,
@@ -297,8 +374,17 @@ function checkSymbol(
     moduleSpecifier,
     exsy,
   );
+
+  debugLog("checkSymbolImportability result", {
+    result: checkResult,
+    symbolName: exsy.name,
+    importerFile: tsNode.getSourceFile().fileName,
+    moduleSpecifier,
+  });
+
   switch (checkResult) {
     case "package": {
+      debugLog("Reporting package error for", exsy.name);
       context.report({
         node: originalNode,
         messageId: reexport ? "package:reexport" : "package",
@@ -309,6 +395,7 @@ function checkSymbol(
       break;
     }
     case "private": {
+      debugLog("Reporting private error for", exsy.name);
       context.report({
         node: originalNode,
         messageId: reexport ? "private:reexport" : "private",
@@ -317,6 +404,9 @@ function checkSymbol(
         },
       });
       break;
+    }
+    default: {
+      debugLog("Symbol is importable:", exsy.name);
     }
   }
 }
