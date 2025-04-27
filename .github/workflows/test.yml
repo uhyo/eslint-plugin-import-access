@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20, 22]
-        ts-version: ["5.0", "5.4", "5.8"]
+        ts-version: ["5.4", "5.8"]
         ts-eslint-version: [8]
         eslint-version: [8, 9]
         flat-config: ["true", ""]
