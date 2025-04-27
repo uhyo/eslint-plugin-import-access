@@ -48,7 +48,7 @@ class FlatESLintTester implements ESLintTester {
           parserOptions: {
             ecmaVersion: 2020,
             tsconfigRootDir: this.#projectRoot,
-            project: true,
+            projectService: true,
             sourceType: "module",
             program: this.#program,
           },
@@ -105,7 +105,7 @@ class LegacyESLintTester implements ESLintTester {
         parserOptions: {
           ecmaVersion: 2020,
           tsconfigRootDir: this.#projectRoot,
-          project: true,
+          projectService: true,
           sourceType: "module",
           program: this.#program,
         },
