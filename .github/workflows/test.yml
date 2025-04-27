@@ -41,6 +41,7 @@ jobs:
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
             --legacy-peer-deps
-      - run: npm test
+      - run: tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit
+      - run: node --test 'dist/__tests__/*.js'
         env:
           TEST_FLAT_CONFIG: ${{ matrix.flat-config }}
