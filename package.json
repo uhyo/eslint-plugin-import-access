@@ -21,7 +21,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "eslint src/**/*.ts",
-    "test": "tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit && jest",
+    "test": "tsc && tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit && node --test 'dist/__tests__/*.js'",
     "test:watch": "jest --watch"
   },
   "keywords": [
