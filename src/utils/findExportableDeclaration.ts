@@ -1,3 +1,4 @@
+import type { Node } from "typescript";
 import {
   isClassDeclaration,
   isExportAssignment,
@@ -7,7 +8,6 @@ import {
   isSourceFile,
   isTypeAliasDeclaration,
   isVariableStatement,
-  Node,
   SyntaxKind,
 } from "typescript";
 

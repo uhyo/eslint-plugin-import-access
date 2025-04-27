@@ -1,5 +1,5 @@
-import jsdoc from "./rules/jsdoc";
-import { tsServerPluginInit } from "./ts-server-plugin";
+import jsdoc from "./rules/jsdoc.js";
+import { tsServerPluginInit } from "./ts-server-plugin/index.js";
 
 const eslintRule = {
   rules: {
@@ -17,4 +17,4 @@ const eslintRule = {
 
 const plugin = Object.assign(tsServerPluginInit, eslintRule);
 
-export = plugin;
+export default plugin;

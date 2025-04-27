@@ -1,7 +1,8 @@
 import { TSESLint, TSESTree } from "@typescript-eslint/utils";
-import { Node, Program, Symbol, isStringLiteral } from "typescript";
-import { checkSymbolImportability } from "../core/checkSymbolmportability";
-import { PackageOptions } from "../utils/isInPackage";
+import type { Node, Program, Symbol } from "typescript";
+import { isStringLiteral } from "typescript";
+import { checkSymbolImportability } from "../core/checkSymbolmportability.js";
+import type { PackageOptions } from "../utils/isInPackage.js";
 
 type MessageId =
   | "no-program"

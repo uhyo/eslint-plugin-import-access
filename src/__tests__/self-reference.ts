@@ -1,4 +1,4 @@
-import { getESLintTester } from "./fixtures/eslint";
+import { getESLintTester } from "./fixtures/eslint.js";
 
 const tester = getESLintTester();
 

@@ -1,15 +1,16 @@
-import type ts from "typescript/lib/tsserverlibrary";
-import { checkSymbolImportability } from "../core/checkSymbolmportability";
-import { jsDocRuleDefaultOptions, JSDocRuleOptions } from "../rules/jsdoc";
-import { PackageOptions } from "../utils/isInPackage";
+import type ts from "typescript/lib/tsserverlibrary" with { "resolution-mode": "require" };
+import { checkSymbolImportability } from "../core/checkSymbolmportability.js";
+import {
+  jsDocRuleDefaultOptions,
+  type JSDocRuleOptions,
+} from "../rules/jsdoc.js";
+import type { PackageOptions } from "../utils/isInPackage.js";
 
 type PluginConfig = {
   jsdoc?: Partial<JSDocRuleOptions>;
 };
 
-export function tsServerPluginInit(modules: {
-  typescript: typeof import("typescript/lib/tsserverlibrary");
-}) {
+export function tsServerPluginInit(modules: { typescript: typeof ts }) {
   const { typescript } = modules;
 
   function create(info: ts.server.PluginCreateInfo) {

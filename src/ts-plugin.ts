@@ -1,3 +1,3 @@
-import { tsServerPluginInit } from "./ts-server-plugin";
+import { tsServerPluginInit } from "./ts-server-plugin/index.js";
 
-export = tsServerPluginInit;
+export default tsServerPluginInit;

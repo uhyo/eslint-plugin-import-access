@@ -2,9 +2,10 @@ import * as parser from "@typescript-eslint/parser";
 import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
-import { Program } from "typescript";
+import type { Program } from "typescript";
 import flatPlugin from "../../flat-config.cjs";
-import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
+import type { JSDocRuleOptions } from "../../rules/jsdoc.js";
+import jsdocRule from "../../rules/jsdoc.js";
 
 interface ESLintTester {
   /**

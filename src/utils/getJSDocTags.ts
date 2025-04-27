@@ -1,5 +1,5 @@
 import { canHaveJsDoc, getJsDoc } from "tsutils";
-import { Node } from "typescript";
+import type { Node } from "typescript";
 
 export type Tag = {
   name: string;

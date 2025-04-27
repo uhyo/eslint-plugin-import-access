@@ -1,13 +1,15 @@
 import { minimatch } from "minimatch";
 import path from "path";
-import { Program, Symbol } from "typescript";
-import { assertNever } from "../utils/assertNever";
-import { concatArrays } from "../utils/concatArrays";
-import { findExportedDeclaration } from "../utils/findExportableDeclaration";
-import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs";
-import { Tag, getJSDocTags } from "../utils/getJSDocTags";
-import { PackageOptions, isInPackage } from "../utils/isInPackage";
-import { lookupPackageJson } from "./lookupPackageJson";
+import type { Program, Symbol } from "typescript";
+import { assertNever } from "../utils/assertNever.js";
+import { concatArrays } from "../utils/concatArrays.js";
+import { findExportedDeclaration } from "../utils/findExportableDeclaration.js";
+import { getAccessOfJsDocs } from "../utils/getAccessOfJsDocs.js";
+import type { Tag } from "../utils/getJSDocTags.js";
+import { getJSDocTags } from "../utils/getJSDocTags.js";
+import type { PackageOptions } from "../utils/isInPackage.js";
+import { isInPackage } from "../utils/isInPackage.js";
+import { lookupPackageJson } from "./lookupPackageJson.js";
 
 /**
  * Result of checking a symbol.

@@ -1,4 +1,4 @@
-import { Tag } from "./getJSDocTags";
+import type { Tag } from "./getJSDocTags.js";
 
 export type JSDocAccess = "public" | "package" | "private";
 
