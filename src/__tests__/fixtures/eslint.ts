@@ -3,7 +3,8 @@ import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
 import type { Program } from "typescript";
-import flatPlugin from "../../flat-config.cjs";
+import { fileURLToPath } from "url";
+import flatPlugin from "../../flat-config.mjs";
 import type { JSDocRuleOptions } from "../../rules/jsdoc.js";
 import jsdocRule from "../../rules/jsdoc.js";
 
@@ -119,7 +120,10 @@ let cache: ESLintTester | undefined;
  * get an ESLint instance for testing.
  */
 export function getESLintTester(): ESLintTester {
-  const projectRoot = path.resolve(__dirname, "project");
+  const projectRoot = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "../../../src/__tests__/fixtures/project",
+  );
   if (flatConfig) {
     return (cache ||= new FlatESLintTester(projectRoot));
   } else {

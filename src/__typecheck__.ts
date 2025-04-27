@@ -1,5 +1,5 @@
 import { config } from "typescript-eslint";
-import importAccess from "./flat-config.cjs";
+import importAccess from "./flat-config.mjs";
 
 // File to ensure that types are compatible with
 // typescript-eslint.
