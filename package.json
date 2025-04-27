@@ -3,6 +3,7 @@
   "version": "2.2.2",
   "description": "ESLint rule for prohibiting package-private imports",
   "main": "dist/index.js",
+  "type": "module",
   "exports": {
     "./ts-plugin": "./dist/ts-plugin.js",
     "./flat-config": {
