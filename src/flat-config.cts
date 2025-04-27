@@ -6,7 +6,8 @@ import type { TSESLint } from "@typescript-eslint/utils";
 const eslintPlugin: TSESLint.FlatConfig.Plugin = {
   rules: {
     get jsdoc() {
-      return require("./rules.jsdoc.js").default;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require("./rules/jsdoc.js").default;
     },
   },
 };
