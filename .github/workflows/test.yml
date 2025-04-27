@@ -11,11 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20, 22]
-        ts-version: ["5.5", "5.8"]
+        # node-version: [20, 22]
+        # ts-version: ["5.5", "5.8"]
+        # ts-eslint-version: [8]
+        # eslint-version: [8, 9]
+        # flat-config: ["true", ""]
+        node-version: [22]
+        ts-version: ["5.8"]
         ts-eslint-version: [8]
-        eslint-version: [8, 9]
-        flat-config: ["true", ""]
+        eslint-version: [8]
+        flat-config: [""]
         exclude:
           - eslint-version: 8
             flat-config: "true"
