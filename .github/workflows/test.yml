@@ -40,12 +40,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       # - run: npm run lint
-      - run: |
-          npm install -D typescript@${{ matrix.ts-version }} \
-            eslint@${{ matrix.eslint-version }} \
-            @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
-            @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
-            --legacy-peer-deps
+      # - run: |
+      #     npm install -D typescript@${{ matrix.ts-version }} \
+      #       eslint@${{ matrix.eslint-version }} \
+      #       @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
+      #       @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
+      #       --legacy-peer-deps
       - run: npx tsc -p src/__tests__/fixtures/project/tsconfig.json --noEmit
       - run: node --test
         env:
