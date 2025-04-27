@@ -1,3 +1,5 @@
+import * as assert from "node:assert";
+import { it } from "node:test";
 import { getESLintTester } from "./fixtures/eslint.js";
 
 const tester = getESLintTester();
@@ -11,21 +13,19 @@ it("Importing from generated package is disallowed by default", async () => {
       },
     },
   );
-  expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 19,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'someValue'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+  assert.deepStrictEqual(result, [
+    {
+      column: 10,
+      endColumn: 19,
+      endLine: 1,
+      line: 1,
+      message: "Cannot import a package-private export 'someValue'",
+      messageId: "package",
+      nodeType: "ImportSpecifier",
+      ruleId: "import-access/jsdoc",
+      severity: 2,
+    },
+  ]);
 });
 
 it("Importing from generated package is allowed with excludeSourcePatterns targeting the file path (relative path)", async () => {
@@ -41,5 +41,5 @@ it("Importing from generated package is allowed with excludeSourcePatterns targe
       },
     },
   );
-  expect(result).toMatchInlineSnapshot(`Array []`);
+  assert.deepStrictEqual(result, []);
 });

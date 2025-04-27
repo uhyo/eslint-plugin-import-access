@@ -1,3 +1,5 @@
+import * as assert from "node:assert";
+import { describe, it } from "node:test";
 import { getESLintTester } from "./fixtures/eslint.js";
 
 const tester = getESLintTester();
@@ -13,7 +15,7 @@ describe("library", () => {
           },
         },
       );
-      expect(result).toMatchInlineSnapshot(`Array []`);
+      assert.deepStrictEqual(result, []);
     });
   });
   describe("Third party modules", () => {
@@ -23,7 +25,7 @@ describe("library", () => {
           defaultImportability: "package",
         },
       });
-      expect(result).toMatchInlineSnapshot(`Array []`);
+      assert.deepStrictEqual(result, []);
     });
     describe("Entrypoint is missing", () => {
       it("No error with defaultImportability=package", async () => {
@@ -35,7 +37,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
     describe("Importing sub module", () => {
@@ -48,7 +50,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
     describe("With exports field", () => {
@@ -61,7 +63,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
   });
@@ -72,7 +74,7 @@ describe("library", () => {
           defaultImportability: "package",
         },
       });
-      expect(result).toMatchInlineSnapshot(`Array []`);
+      assert.deepStrictEqual(result, []);
     });
     describe("Entrypoint is missing", () => {
       it("No error with defaultImportability=package", async () => {
@@ -84,7 +86,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
     describe("Importing sub module", () => {
@@ -97,7 +99,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
     describe("With exports field", () => {
@@ -110,7 +112,7 @@ describe("library", () => {
             },
           },
         );
-        expect(result).toMatchInlineSnapshot(`Array []`);
+        assert.deepStrictEqual(result, []);
       });
     });
   });
