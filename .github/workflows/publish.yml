@@ -16,6 +16,15 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
-      - uses: JS-DevTools/npm-publish@v3
+      - name: Publish to npm (pre-release beta)
+        if: ${{ github.event.release.prerelease }}
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          tag: beta
+
+      - name: Publish to npm (release latest)
+        if: ${{ github.event.release.prerelease == false }}
+        uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
