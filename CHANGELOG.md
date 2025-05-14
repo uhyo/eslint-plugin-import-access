@@ -2,7 +2,7 @@
 
 ### 3.0.0 (Currently in beta)
 
-> ![WARNING]
+> [!WARNING]
 >
 > **Breaking Change**: minimum supported versions have been updated to:
 >
