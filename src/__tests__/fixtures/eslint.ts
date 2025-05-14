@@ -3,8 +3,13 @@ import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
 import { Program } from "typescript";
-import flatPlugin from "../../flat-config.cjs";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
+
+const flatPlugin = {
+  rules: {
+    jsdoc: jsdocRule,
+  },
+};
 
 interface ESLintTester {
   /**
@@ -46,7 +51,7 @@ class FlatESLintTester implements ESLintTester {
           parserOptions: {
             ecmaVersion: 2020,
             tsconfigRootDir: this.#projectRoot,
-            project: "./tsconfig.json",
+            projectService: true,
             sourceType: "module",
             program: this.#program,
           },
@@ -97,7 +102,7 @@ class LegacyESLintTester implements ESLintTester {
         parserOptions: {
           ecmaVersion: 2020,
           tsconfigRootDir: this.#projectRoot,
-          project: "./tsconfig.json",
+          projectService: true,
           sourceType: "module",
           program: this.#program,
         },
