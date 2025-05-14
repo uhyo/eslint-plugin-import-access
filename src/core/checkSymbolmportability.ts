@@ -12,7 +12,7 @@ import { isInPackage } from "../utils/isInPackage.js";
 import { lookupPackageJson } from "./lookupPackageJson.js";
 
 // Debug logging function
-function debugLog(...args: any[]): void {
+function debugLog(...args: unknown[]): void {
   console.log("[DEBUG:checkSymbolImportability.ts]", ...args);
 }
 
@@ -59,15 +59,26 @@ export function checkSymbolImportability(
       packageOptions.excludeSourcePatterns,
     );
     for (const pattern of packageOptions.excludeSourcePatterns) {
-      // Check actual file path
       // Get relative path from the project root
       const projectPath = program.getCurrentDirectory();
       const relativePath = path.relative(projectPath, exporterFilename);
+      // Also get relative path from repository root (workspace)
+      const workspaceRelativePath = path.relative(
+        process.cwd(),
+        exporterFilename,
+      );
 
       debugLog("Checking pattern", { pattern, relativePath });
+      debugLog("Checking pattern against workspace path", {
+        pattern,
+        workspaceRelativePath,
+      });
 
       // Check if the file path matches the pattern
-      if (minimatch(relativePath, pattern, { dot: true })) {
+      if (
+        minimatch(relativePath, pattern, { dot: true }) ||
+        minimatch(workspaceRelativePath, pattern, { dot: true })
+      ) {
         // Skip importability check for this source
         debugLog("File matches exclude pattern, skipping importability check");
         return;
