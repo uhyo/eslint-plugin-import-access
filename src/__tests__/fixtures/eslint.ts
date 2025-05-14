@@ -82,12 +82,6 @@ class LegacyESLintTester implements ESLintTester {
     this.#linter.defineParser("@typescript-eslint/parser", parser);
 
     this.#linter.defineRule("import-access/jsdoc", jsdocRule);
-    // console.log("[DEBUG:eslint.ts]", {
-    //   files: this.#program.getSourceFiles().map((f) => f.fileName),
-    // });
-    for (const file of this.#program.getSourceFiles()) {
-      console.log("[DEBUG:eslint.ts]", file.fileName);
-    }
   }
   async lintFile(
     filePath: string,
