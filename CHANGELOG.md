@@ -1,5 +1,17 @@
 ## Changelog
 
+### 3.0.0 (Currently in beta)
+
+> ![WARNING]
+>
+> **Breaking Change**: minimum supported versions have been updated to:
+>
+> - Node.js 20
+> - TypeScript 5.0
+> - TypeScript-ESLint 8
+
+- feat: add excludeSourcePatterns option to import-access/jsdoc rule (#125)
+
 ### 2.2.2
 
 - fix typing incompatibility with typescript-eslint (#49)
