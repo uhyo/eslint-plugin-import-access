@@ -36,7 +36,7 @@ it("Importing from generated package is allowed with excludeSourcePatterns targe
         defaultImportability: "package",
         excludeSourcePatterns: [
           // exclude the types file
-          "src/__tests__/fixtures/project/src/exclude-patterns/types/**",
+          "src/exclude-patterns/types/**",
         ],
       },
     },
