@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20, 22]
+        node-version: [20, 22]
         ts-version: ["5.0", "5.4", "5.8"]
         ts-eslint-version: [8]
         eslint-version: [8, 9]
