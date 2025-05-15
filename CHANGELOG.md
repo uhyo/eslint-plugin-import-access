@@ -1,6 +1,6 @@
 ## Changelog
 
-### 3.0.0 (Currently in beta)
+### 3.0.0
 
 > [!WARNING]
 >
