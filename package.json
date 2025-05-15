@@ -53,7 +53,7 @@
     "@typescript-eslint/parser": "^8.4.0",
     "@typescript-eslint/typescript-estree": "^8.4.0",
     "@vitest/expect": "^3.1.1",
-    "eslint": "^8.7.0",
+    "eslint": "^9.26.0",
     "eslint-plugin-local-rules": "^3.0.2",
     "espree": "^10.0.1",
     "prettier": "^3.2.5",
