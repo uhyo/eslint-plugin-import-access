@@ -42,13 +42,13 @@ import { fooPackageVariable } from "./sub/foo";
 
 ## Options
 
-The `import-access/jsdoc` rule has following options. All options are optional (see below for default values).
+The `import-access/jsdoc` rule has the following options. All options are optional (see below for default values).
 
 ```ts
 type JSDocRuleOptions = {
   indexLoophole: boolean;
   filenameLoophole: boolean;
-  defaultImportability: "public" | "pacakge" | "private";
+  defaultImportability: "public" | "package" | "private";
   treatSelfReferenceAs: "internal" | "external";
   excludeSourcePatterns?: string[];
 };
@@ -138,7 +138,7 @@ _Default value: `public`_
 
 You can set default importability value that applies to the entire project.
 
-For example, i you set the default importability to `package`, any export without JSDoc annotation is treated as `@package`.
+For example, if you set the default importability to `package`, any export without JSDoc annotation is treated as `@package`.
 
 You can override this default value by adding JSDoc annotation to the export. To make an export public, add `@public` annotation.
 
