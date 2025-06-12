@@ -1,5 +1,8 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const jsdocRule = require('./dist/rules/jsdoc.js').default;
 
 export default tseslint.config(
   js.configs.recommended,
@@ -19,10 +22,16 @@ export default tseslint.config(
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
+      'local-rules': {
+        rules: {
+          jsdoc: jsdocRule,
+        },
+      },
     },
     rules: {
       'no-undef': 'off',
       '@typescript-eslint/ban-types': 'off',
+      'local-rules/jsdoc': 'error',
     },
   }
 );
