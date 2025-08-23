@@ -9,6 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # TypeScript 5.0 doesn't support Explicit Resource Management types included in latest @types/node versions
+    ignore:
+      - dependency-name: "@types/node"
     groups:
       minors:
         dependency-type: "production"
