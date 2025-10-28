@@ -13,6 +13,12 @@ updates:
     ignore:
       - dependency-name: "@types/node"
     groups:
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint/*"
+        update-types:
+          - "minor"
+          - "patch"
       minors:
         dependency-type: "production"
         update-types:
