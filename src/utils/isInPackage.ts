@@ -10,9 +10,6 @@ export type PackageOptions = {
   readonly packageDirectory?: readonly string[];
 };
 
-// ../ or ../../ or ...
-const ancestorDirRegExp = new RegExp(`^(?:\\.\\.\\${path.sep})*(?:\\.\\.)?$`);
-
 const indexFileRegExp = new RegExp(`\\/index\\.[cm]?[jt]sx?$`);
 
 /**
@@ -111,11 +108,8 @@ export function isInPackage(
     return true;
   }
 
-  // Special case: filenameLoophole only applies when packageDirectory is not specified
-  if (
-    !packageOptions.packageDirectory &&
-    packageOptions.filenameLoophole
-  ) {
+  // Check filenameLoophole: importing foo/bar.ts from foo.ts
+  if (packageOptions.filenameLoophole) {
     const rel = path.relative(path.dirname(importer), path.dirname(exporter));
     if (rel === path.basename(importer, path.extname(importer))) {
       // Example: importing foo/bar.ts from foo.ts

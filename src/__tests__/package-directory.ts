@@ -130,4 +130,21 @@ Array [
 `);
     });
   });
+
+  describe("filenameLoophole with packageDirectory", () => {
+    const filenameLoopholeOption = {
+      jsdoc: {
+        packageDirectory: ["**", "!**/_internal"],
+        filenameLoophole: true,
+      },
+    };
+
+    it("Can import from directory matching filename (filenameLoophole works with packageDirectory)", async () => {
+      const result = await tester.lintFile(
+        "src/package-directory/filenameLoophole/sub.ts",
+        filenameLoopholeOption,
+      );
+      expect(result).toEqual([]);
+    });
+  });
 });
