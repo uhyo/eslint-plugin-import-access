@@ -15,7 +15,8 @@ As a bonus feature, importing exports annotated with `@private` is always forbid
       "filenameLoophole": false,
       "defaultImportability": "public", // "public" | "package" | "private"
       "treatSelfReferenceAs": "external", // "internal" | "external"
-      "excludeSourcePatterns": ["generated/**/*"] // Array of glob patterns for source paths to exclude
+      "excludeSourcePatterns": ["generated/**/*"], // Array of glob patterns for source paths to exclude
+      "packageDirectory": ["**", "!**/_internal"] // Array of glob patterns for package boundaries
     }],
   }
 ```
@@ -51,6 +52,7 @@ type JSDocRuleOptions = {
   defaultImportability: "public" | "package" | "private";
   treatSelfReferenceAs: "internal" | "external";
   excludeSourcePatterns?: string[];
+  packageDirectory?: string[];
 };
 ```
 
@@ -240,4 +242,59 @@ When working with Next.js projects, it's recommended to exclude the `.next` dire
 ```
 
 This will ensure that any imports from auto-generated files in the `.next` directory are not subject to import-access restrictions.
+
+### `packageDirectory`
+
+_Default value: `undefined` (all directories are treated as package boundaries)_
+
+An array of glob patterns that specify which directories should be treated as package boundaries. By default, every directory creates a package boundary. This option allows you to exclude certain directories from being treated as package boundaries, which is useful for organizing internal implementation details in subdirectories without creating separate packages.
+
+The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax. You can use negation patterns (prefixed with `!`) to exclude directories from being package boundaries.
+
+**Use case:**
+
+This option is particularly useful when you want to organize code with subdirectories (like `_internal/`) that contain package-private exports accessible to the parent directory, without requiring barrel files (index.ts re-exports).
+
+**Example:**
+
+```ts
+// Configuration
+{
+  "packageDirectory": ["**", "!**/_internal"]
+}
+
+// ----- src/foo.ts
+import { internalHelper } from "./_internal/helpers"; // ✓ Allowed
+
+// ----- src/_internal/helpers.ts
+/**
+ * @package
+ */
+export const internalHelper = () => { /* ... */ };
+
+// ----- src/sub/bar.ts
+// This is still INCORRECT because src/sub is a different package from src
+import { internalHelper } from "../_internal/helpers";
+```
+
+In this example:
+- `["**", "!**/_internal"]` means all directories are package boundaries EXCEPT those named `_internal`
+- Files in `_internal/` are treated as belonging to the parent directory's package
+- `src/foo.ts` can import from `src/_internal/helpers.ts` because they're in the same package
+- `src/sub/bar.ts` cannot import from `src/_internal/helpers.ts` because `src/sub/` is a different package
+
+**Additional examples:**
+
+```js
+// Exclude multiple directory patterns
+"packageDirectory": ["**", "!**/_internal", "!**/utils"]
+
+// Only treat specific directories as packages
+"packageDirectory": ["src/*"]
+
+// Exclude deeply nested patterns
+"packageDirectory": ["**", "!**/private/**"]
+```
+
+**Note:** When `packageDirectory` is not specified or is an empty array, the plugin uses its default behavior where every directory is a package boundary.
 

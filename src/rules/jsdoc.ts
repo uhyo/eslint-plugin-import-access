@@ -35,6 +35,13 @@ export type JSDocRuleOptions = {
    * Useful for excluding generated files or auto-generated type definitions.
    */
   excludeSourcePatterns?: string[];
+  /**
+   * Array of glob patterns that specify which directories should be treated as package boundaries.
+   * By default, all directories are treated as package boundaries.
+   * Use negation patterns (e.g., "!**\/_internal") to exclude certain directories from being package boundaries.
+   * Example: ["**", "!**\/_internal"] treats all directories as packages except those named "_internal".
+   */
+  packageDirectory?: string[];
 };
 
 const jsdocRule: Omit<
@@ -81,6 +88,12 @@ const jsdocRule: Omit<
               type: "string",
             },
           },
+          packageDirectory: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
         },
         additionalProperties: false,
       },
@@ -93,6 +106,7 @@ const jsdocRule: Omit<
       defaultImportability: "public",
       treatSelfReferenceAs: "external",
       excludeSourcePatterns: [],
+      packageDirectory: undefined,
     },
   ],
   create(context) {
@@ -107,6 +121,7 @@ const jsdocRule: Omit<
       defaultImportability,
       treatSelfReferenceAs,
       excludeSourcePatterns,
+      packageDirectory,
     } = jsDocRuleDefaultOptions(options[0]);
 
     const packageOptions: PackageOptions = {
@@ -115,6 +130,7 @@ const jsdocRule: Omit<
       defaultImportability,
       treatSelfReferenceAs,
       excludeSourcePatterns,
+      packageDirectory,
     };
 
     return {
@@ -264,6 +280,7 @@ export function jsDocRuleDefaultOptions(
     defaultImportability = "public",
     treatSelfReferenceAs = "external",
     excludeSourcePatterns = [],
+    packageDirectory = undefined,
   } = options || {};
   return {
     indexLoophole,
@@ -271,6 +288,7 @@ export function jsDocRuleDefaultOptions(
     defaultImportability,
     treatSelfReferenceAs,
     excludeSourcePatterns,
+    packageDirectory,
   };
 }
 

@@ -1,3 +1,4 @@
+import { minimatch } from "minimatch";
 import path from "path";
 
 export type PackageOptions = {
@@ -6,12 +7,70 @@ export type PackageOptions = {
   readonly defaultImportability: "public" | "package" | "private";
   readonly treatSelfReferenceAs: "internal" | "external";
   readonly excludeSourcePatterns?: readonly string[];
+  readonly packageDirectory?: readonly string[];
 };
 
 // ../ or ../../ or ...
 const ancestorDirRegExp = new RegExp(`^(?:\\.\\.\\${path.sep})*(?:\\.\\.)?$`);
 
 const indexFileRegExp = new RegExp(`\\/index\\.[cm]?[jt]sx?$`);
+
+/**
+ * Checks if a directory matches the packageDirectory patterns.
+ * Returns true if the directory should be treated as a package boundary.
+ */
+function isPackageDirectory(
+  dir: string,
+  patterns: readonly string[],
+): boolean {
+  const dirName = path.basename(dir);
+  let matched = false;
+
+  for (const pattern of patterns) {
+    if (pattern.startsWith("!")) {
+      // Negation pattern - if it matches, this is NOT a package directory
+      const positivePattern = pattern.slice(1);
+      if (minimatch(dirName, positivePattern) || minimatch(dir, positivePattern)) {
+        return false;
+      }
+    } else {
+      // Positive pattern - if it matches, this might be a package directory
+      if (minimatch(dirName, pattern) || minimatch(dir, pattern)) {
+        matched = true;
+      }
+    }
+  }
+
+  return matched;
+}
+
+/**
+ * Finds the package directory for a given file path.
+ * Returns the closest ancestor directory that matches the packageDirectory patterns.
+ */
+function findPackageDirectory(
+  filePath: string,
+  patterns: readonly string[],
+): string {
+  let dir = path.dirname(filePath);
+  const root = path.parse(dir).root;
+
+  // Traverse up the directory tree
+  while (dir !== root) {
+    if (isPackageDirectory(dir, patterns)) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      // Reached the root without finding a package directory
+      break;
+    }
+    dir = parent;
+  }
+
+  // If no package directory found, return the root or the original directory
+  return path.dirname(filePath);
+}
 
 /**
  * Checks whether importer is in the same 'package' as exporter.
@@ -28,6 +87,23 @@ export function isInPackage(
       exporter = exporter.slice(0, -match[0].length);
     }
   }
+
+  // If packageDirectory is specified, use it to determine package boundaries
+  if (packageOptions.packageDirectory && packageOptions.packageDirectory.length > 0) {
+    const importerPackageDir = findPackageDirectory(
+      importer,
+      packageOptions.packageDirectory,
+    );
+    const exporterPackageDir = findPackageDirectory(
+      exporter,
+      packageOptions.packageDirectory,
+    );
+
+    // Check if both files are in the same package directory
+    return importerPackageDir === exporterPackageDir;
+  }
+
+  // Default behavior: use the original logic
   const rel = path.relative(path.dirname(importer), path.dirname(exporter));
   if (
     packageOptions.filenameLoophole &&
