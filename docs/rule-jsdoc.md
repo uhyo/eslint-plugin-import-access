@@ -247,15 +247,24 @@ This will ensure that any imports from auto-generated files in the `.next` direc
 
 _Default value: `undefined` (all directories are treated as package boundaries)_
 
-An array of glob patterns that specify which directories should be treated as package boundaries. By default, every directory creates a package boundary. This option allows you to exclude certain directories from being treated as package boundaries, which is useful for organizing internal implementation details in subdirectories without creating separate packages.
+An array of glob patterns that specify which directories should be treated as package boundaries. By default, every directory creates a package boundary. This option allows you to customize which directories are considered package boundaries, which is useful for organizing internal implementation details in subdirectories without creating separate packages.
 
-The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax. You can use negation patterns (prefixed with `!`) to exclude directories from being package boundaries.
+**Pattern Matching:**
+
+The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax and are matched against:
+1. **Directory names** (e.g., `_internal`, `utils`)
+2. **Relative paths from project root** (e.g., `src/packages/packageA`)
+
+You can use:
+- **Negation patterns** (prefixed with `!`) to exclude directories from being package boundaries
+- **Wildcards** (`*`, `**`) for flexible matching
+- **Path-based patterns** to specify boundaries at specific directory levels
 
 **Use case:**
 
 This option is particularly useful when you want to organize code with subdirectories (like `_internal/`) that contain package-private exports accessible to the parent directory, without requiring barrel files (index.ts re-exports).
 
-**Example:**
+**Example 1: Excluding `_internal` directories**
 
 ```ts
 // Configuration
@@ -283,14 +292,44 @@ In this example:
 - `src/foo.ts` can import from `src/_internal/helpers.ts` because they're in the same package
 - `src/sub/bar.ts` cannot import from `src/_internal/helpers.ts` because `src/sub/` is a different package
 
+**Example 2: Package boundaries at specific directory level**
+
+```ts
+// Configuration
+{
+  "packageDirectory": ["src/packages/*"]
+}
+
+// ----- src/packages/packageA/index.ts
+export const foo = "foo";
+
+// ----- src/packages/packageA/utils/helper.ts
+/**
+ * @package
+ */
+export const helper = () => { /* ... */ };
+
+// ----- src/packages/packageA/index.ts
+import { helper } from "./utils/helper"; // ✓ Allowed (same package)
+
+// ----- src/packages/packageB/index.ts
+import { helper } from "../packageA/utils/helper"; // ✗ Error (different package)
+```
+
+In this example:
+- Only directories directly under `src/packages/` are treated as package boundaries
+- `src/packages/packageA/` is a package, but `src/packages/packageA/utils/` is not
+- All files within `packageA/` (including subdirectories) belong to the same package
+- Cross-package imports are still restricted
+
 **Additional examples:**
 
 ```js
 // Exclude multiple directory patterns
 "packageDirectory": ["**", "!**/_internal", "!**/utils"]
 
-// Only treat specific directories as packages
-"packageDirectory": ["src/*"]
+// Only treat specific directories as packages (monorepo structure)
+"packageDirectory": ["packages/*", "apps/*"]
 
 // Exclude deeply nested patterns
 "packageDirectory": ["**", "!**/private/**"]
