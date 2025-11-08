@@ -73,6 +73,21 @@ function findPackageDirectory(
 }
 
 /**
+ * Gets the package directory for a file based on configuration.
+ * If packageDirectory patterns are specified, uses them to find the package boundary.
+ * Otherwise, returns the file's directory.
+ */
+function getPackageDirectory(
+  filePath: string,
+  packageOptions: PackageOptions,
+): string {
+  if (packageOptions.packageDirectory && packageOptions.packageDirectory.length > 0) {
+    return findPackageDirectory(filePath, packageOptions.packageDirectory);
+  }
+  return path.dirname(filePath);
+}
+
+/**
  * Checks whether importer is in the same 'package' as exporter.
  */
 export function isInPackage(
@@ -88,37 +103,29 @@ export function isInPackage(
     }
   }
 
-  // If packageDirectory is specified, use it to determine package boundaries
-  if (packageOptions.packageDirectory && packageOptions.packageDirectory.length > 0) {
-    const importerPackageDir = findPackageDirectory(
-      importer,
-      packageOptions.packageDirectory,
-    );
-    const exporterPackageDir = findPackageDirectory(
-      exporter,
-      packageOptions.packageDirectory,
-    );
+  const importerPackageDir = getPackageDirectory(importer, packageOptions);
+  const exporterPackageDir = getPackageDirectory(exporter, packageOptions);
 
-    // Check if both files are in the same package directory
-    if (importerPackageDir === exporterPackageDir) {
-      return true;
-    }
-
-    // Also allow if importer's package is a descendant of exporter's package
-    // (i.e., exporter is in an ancestor package)
-    const rel = path.relative(exporterPackageDir, importerPackageDir);
-    // rel should not start with '..' (not going up) and should not be empty
-    return rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel);
-  }
-
-  // Default behavior: use the original logic
-  const rel = path.relative(path.dirname(importer), path.dirname(exporter));
-  if (
-    packageOptions.filenameLoophole &&
-    rel === path.basename(importer, path.extname(importer))
-  ) {
-    // Example: importing foo/bar.ts from foo.ts
+  // Check if both files are in the same package directory
+  if (importerPackageDir === exporterPackageDir) {
     return true;
   }
-  return ancestorDirRegExp.test(rel);
+
+  // Special case: filenameLoophole only applies when packageDirectory is not specified
+  if (
+    !packageOptions.packageDirectory &&
+    packageOptions.filenameLoophole
+  ) {
+    const rel = path.relative(path.dirname(importer), path.dirname(exporter));
+    if (rel === path.basename(importer, path.extname(importer))) {
+      // Example: importing foo/bar.ts from foo.ts
+      return true;
+    }
+  }
+
+  // Check if importer's package is a descendant of exporter's package
+  // (i.e., exporter is in an ancestor package)
+  const rel = path.relative(exporterPackageDir, importerPackageDir);
+  // rel should not start with '..' (not going up) and should not be empty
+  return rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel);
 }
