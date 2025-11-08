@@ -100,7 +100,15 @@ export function isInPackage(
     );
 
     // Check if both files are in the same package directory
-    return importerPackageDir === exporterPackageDir;
+    if (importerPackageDir === exporterPackageDir) {
+      return true;
+    }
+
+    // Also allow if importer's package is a descendant of exporter's package
+    // (i.e., exporter is in an ancestor package)
+    const rel = path.relative(exporterPackageDir, importerPackageDir);
+    // rel should not start with '..' (not going up) and should not be empty
+    return rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel);
   }
 
   // Default behavior: use the original logic

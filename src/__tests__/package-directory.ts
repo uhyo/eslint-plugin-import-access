@@ -70,6 +70,14 @@ Array [
       expect(result).toEqual([]);
     });
 
+    it("Can import from ancestor package (child can import from parent)", async () => {
+      const result = await tester.lintFile(
+        "src/package-directory/sub/descendantUser.ts",
+        packageDirectoryOption,
+      );
+      expect(result).toEqual([]);
+    });
+
     it("Cannot import from different package even with _internal exclusion", async () => {
       const result = await tester.lintFile(
         "src/package-directory/crossPackageUser.ts",
