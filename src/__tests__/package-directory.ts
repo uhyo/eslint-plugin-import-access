@@ -147,4 +147,42 @@ Array [
       expect(result).toEqual([]);
     });
   });
+
+  describe("with packageDirectory: ['src/package-directory/packages/*'] (specific directory pattern)", () => {
+    const packagesOption = {
+      jsdoc: {
+        packageDirectory: ["src/package-directory/packages/*"],
+      },
+    };
+
+    it("Can import from deep subdirectory within same package", async () => {
+      const result = await tester.lintFile(
+        "src/package-directory/packages/packageA/user.ts",
+        packagesOption,
+      );
+      expect(result).toEqual([]);
+    });
+
+    it("Cannot import from sibling package", async () => {
+      const result = await tester.lintFile(
+        "src/package-directory/packages/packageB/crossUser.ts",
+        packagesOption,
+      );
+      expect(result).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "column": 10,
+    "endColumn": 24,
+    "endLine": 2,
+    "line": 2,
+    "message": "Cannot import a package-private export 'packageAHelper'",
+    "messageId": "package",
+    "nodeType": "ImportSpecifier",
+    "ruleId": "import-access/jsdoc",
+    "severity": 2,
+  },
+]
+`);
+    });
+  });
 });

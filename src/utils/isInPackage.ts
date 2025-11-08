@@ -8,6 +8,7 @@ export type PackageOptions = {
   readonly treatSelfReferenceAs: "internal" | "external";
   readonly excludeSourcePatterns?: readonly string[];
   readonly packageDirectory?: readonly string[];
+  readonly projectDirectory?: string;
 };
 
 const indexFileRegExp = new RegExp(`\\/index\\.[cm]?[jt]sx?$`);
@@ -19,20 +20,29 @@ const indexFileRegExp = new RegExp(`\\/index\\.[cm]?[jt]sx?$`);
 function isPackageDirectory(
   dir: string,
   patterns: readonly string[],
+  projectDirectory?: string,
 ): boolean {
   const dirName = path.basename(dir);
+  // Get relative path from project directory if available
+  const relativePath = projectDirectory ? path.relative(projectDirectory, dir) : dir;
   let matched = false;
 
   for (const pattern of patterns) {
     if (pattern.startsWith("!")) {
       // Negation pattern - if it matches, this is NOT a package directory
       const positivePattern = pattern.slice(1);
-      if (minimatch(dirName, positivePattern) || minimatch(dir, positivePattern)) {
+      if (
+        minimatch(dirName, positivePattern) ||
+        minimatch(relativePath, positivePattern)
+      ) {
         return false;
       }
     } else {
       // Positive pattern - if it matches, this might be a package directory
-      if (minimatch(dirName, pattern) || minimatch(dir, pattern)) {
+      if (
+        minimatch(dirName, pattern) ||
+        minimatch(relativePath, pattern)
+      ) {
         matched = true;
       }
     }
@@ -48,13 +58,14 @@ function isPackageDirectory(
 function findPackageDirectory(
   filePath: string,
   patterns: readonly string[],
+  projectDirectory?: string,
 ): string {
   let dir = path.dirname(filePath);
   const root = path.parse(dir).root;
 
   // Traverse up the directory tree
   while (dir !== root) {
-    if (isPackageDirectory(dir, patterns)) {
+    if (isPackageDirectory(dir, patterns, projectDirectory)) {
       return dir;
     }
     const parent = path.dirname(dir);
@@ -79,7 +90,11 @@ function getPackageDirectory(
   packageOptions: PackageOptions,
 ): string {
   if (packageOptions.packageDirectory && packageOptions.packageDirectory.length > 0) {
-    return findPackageDirectory(filePath, packageOptions.packageDirectory);
+    return findPackageDirectory(
+      filePath,
+      packageOptions.packageDirectory,
+      packageOptions.projectDirectory,
+    );
   }
   return path.dirname(filePath);
 }

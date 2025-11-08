@@ -131,6 +131,7 @@ const jsdocRule: Omit<
       treatSelfReferenceAs,
       excludeSourcePatterns,
       packageDirectory,
+      projectDirectory: parserServices.program?.getCurrentDirectory(),
     };
 
     return {
