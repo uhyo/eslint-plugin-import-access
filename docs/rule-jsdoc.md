@@ -1,6 +1,6 @@
 # `import-access/jsdoc` rule
 
-_Note: although this rule does not seem related to types, this rule requires [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) settings with [the `project` parser option set](https://typescript-eslint.io/packages/parser/#project)._
+_Note: this rules requires [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) settings with **type information enabled**. See typescript-eslint's docs on [how to enable type information](https://typescript-eslint.io/getting-started/typed-linting)._
 
 When this rule is enabled, `export` declaration can have a JSDoc `@package` annotation. Such exports can be imported only from files in the same directory or sub directories in that directory.
 
@@ -210,20 +210,20 @@ import { typeDefinition } from "../types/api"; // Allowed if the implementation 
 ```
 
 Additional examples:
+
 ```js
 // Match all files in a particular directory
-"src/generated/**"
+"src/generated/**";
 
 // Match multiple extensions
-"**/*.{generated,auto}.{ts,js}"
+"**/*.{generated,auto}.{ts,js}";
 
 // Match files with specific naming patterns
-"**/[a-z]*.auto.ts"
+"**/[a-z]*.auto.ts";
 
 // Match specific type definition files
-"src/**/*.d.ts"
+"src/**/*.d.ts";
 ```
-
 
 **Next.js specific configuration:**
 
@@ -245,24 +245,11 @@ This will ensure that any imports from auto-generated files in the `.next` direc
 
 ### `packageDirectory`
 
-_Default value: `undefined` (all directories are treated as package boundaries)_
+_Default value: `["**"]` (all directories are treated as package boundaries)_
 
 An array of glob patterns that specify which directories should be treated as package boundaries. By default, every directory creates a package boundary. This option allows you to customize which directories are considered package boundaries, which is useful for organizing internal implementation details in subdirectories without creating separate packages.
 
-**Pattern Matching:**
-
-The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax and are matched against:
-1. **Directory names** (e.g., `_internal`, `utils`)
-2. **Relative paths from project root** (e.g., `src/packages/packageA`)
-
-You can use:
-- **Negation patterns** (prefixed with `!`) to exclude directories from being package boundaries
-- **Wildcards** (`*`, `**`) for flexible matching
-- **Path-based patterns** to specify boundaries at specific directory levels
-
-**Use case:**
-
-This option is particularly useful when you want to organize code with subdirectories (like `_internal/`) that contain package-private exports accessible to the parent directory, without requiring barrel files (index.ts re-exports).
+The patterns use the [minimatch](https://github.com/isaacs/minimatch) library's glob syntax and are matched against relative paths from project root.
 
 **Example 1: Excluding `_internal` directories**
 
@@ -272,25 +259,26 @@ This option is particularly useful when you want to organize code with subdirect
   "packageDirectory": ["**", "!**/_internal"]
 }
 
-// ----- src/foo.ts
+// ----- src/feature1/foo.ts
 import { internalHelper } from "./_internal/helpers"; // ✓ Allowed
 
-// ----- src/_internal/helpers.ts
+// ----- src/feature1/_internal/helpers.ts
 /**
  * @package
  */
 export const internalHelper = () => { /* ... */ };
 
-// ----- src/sub/bar.ts
-// This is still INCORRECT because src/sub is a different package from src
-import { internalHelper } from "../_internal/helpers";
+// ----- src/main.ts
+// This is still INCORRECT because you are trying to import from inside the feature1 package
+import { internalHelper } from "./feature1/_internal/helpers";
 ```
 
 In this example:
-- `["**", "!**/_internal"]` means all directories are package boundaries EXCEPT those named `_internal`
+
+- `["**", "!**/_internal"]` means all directories are package boundaries expect those named `_internal`
 - Files in `_internal/` are treated as belonging to the parent directory's package
-- `src/foo.ts` can import from `src/_internal/helpers.ts` because they're in the same package
-- `src/sub/bar.ts` cannot import from `src/_internal/helpers.ts` because `src/sub/` is a different package
+- `src/feature1/foo.ts` can import from `src/feature1/_internal/helpers.ts` because they're in the same package
+- `src/main.ts` cannot import from `src/feature1/_internal/helpers.ts` because `src/feature1` is a different package
 
 **Example 2: Package boundaries at specific directory level**
 
@@ -317,6 +305,7 @@ import { helper } from "../packageA/utils/helper"; // ✗ Error (different packa
 ```
 
 In this example:
+
 - Only directories directly under `src/packages/` are treated as package boundaries
 - `src/packages/packageA/` is a package, but `src/packages/packageA/utils/` is not
 - All files within `packageA/` (including subdirectories) belong to the same package
@@ -328,12 +317,9 @@ In this example:
 // Exclude multiple directory patterns
 "packageDirectory": ["**", "!**/_internal", "!**/utils"]
 
-// Only treat specific directories as packages (monorepo structure)
+// Only treat specific directories as packages
 "packageDirectory": ["packages/*", "apps/*"]
 
 // Exclude deeply nested patterns
 "packageDirectory": ["**", "!**/private/**"]
 ```
-
-**Note:** When `packageDirectory` is not specified or is an empty array, the plugin uses its default behavior where every directory is a package boundary.
-
