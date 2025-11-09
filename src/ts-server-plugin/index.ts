@@ -20,9 +20,12 @@ export function tsServerPluginInit(modules: {
 
     const config: PluginConfig = info.config;
 
-    const packageOptions: PackageOptions = jsDocRuleDefaultOptions(
-      config.jsdoc,
-    );
+    const packageOptions: PackageOptions = {
+      ...jsDocRuleDefaultOptions(config.jsdoc),
+      projectDirectory: info.languageService
+        .getProgram()
+        ?.getCurrentDirectory(),
+    };
 
     // Set up decorator
     const proxy: ts.LanguageService = Object.create(null);
