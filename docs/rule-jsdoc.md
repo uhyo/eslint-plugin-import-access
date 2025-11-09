@@ -2,7 +2,7 @@
 
 _Note: this rules requires [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) settings with **type information enabled**. See typescript-eslint's docs on [how to enable type information](https://typescript-eslint.io/getting-started/typed-linting)._
 
-When this rule is enabled, `export` declaration can have a JSDoc `@package` annotation. Such exports can be imported only from files in the same directory or sub directories in that directory.
+When this rule is enabled, `export` declaration can have a JSDoc `@package` annotation. Such exports can be imported only from files in the same ″package” (or sub packages). By default, all directory are considered to be a package.
 
 As a bonus feature, importing exports annotated with `@private` is always forbidden.
 
