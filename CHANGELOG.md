@@ -1,5 +1,9 @@
 ## Changelog
 
+### 3.1.0
+
+- feat: add packageDirectory option to customize package boundaries (#185)
+
 ### 3.0.0
 
 > [!WARNING]
