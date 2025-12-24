@@ -40,6 +40,8 @@ jobs:
             eslint@${{ matrix.eslint-version }} \
             @typescript-eslint/eslint-plugin@${{ matrix.ts-eslint-version }} \
             @typescript-eslint/parser@${{ matrix.ts-eslint-version }} \
+            @typescript-eslint/typescript-estree@${{ matrix.ts-eslint-version }} \
+            @typescript-eslint/utils@${{ matrix.ts-eslint-version }} \
             --legacy-peer-deps
       # Rebuild after installing different TypeScript versions to ensure compatibility
       - run: npm run build
