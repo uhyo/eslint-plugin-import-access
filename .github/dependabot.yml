@@ -15,17 +15,22 @@ updates:
     groups:
       typescript-eslint:
         patterns:
+          - "typescript-eslint"
           - "@typescript-eslint*"
         update-types:
           - "minor"
           - "patch"
       minors:
         dependency-type: "production"
+        exclude-patterns:
+          - "@typescript-eslint*"
         update-types:
           - "minor"
           - "patch"
       minors-dev:
         dependency-type: "development"
+        exclude-patterns:
+          - "@typescript-eslint*"
         update-types:
           - "minor"
           - "patch"
