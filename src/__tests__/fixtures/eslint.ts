@@ -2,6 +2,7 @@ import * as parser from "@typescript-eslint/parser";
 import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
+import * as ts from "typescript";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
 const flatPlugin = {
@@ -34,8 +35,12 @@ class FlatESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Clear parser caches to ensure fresh type information
+    // Clear all caches to ensure fresh type information
     parser.clearCaches();
+    // Also clear TypeScript's internal caches if available
+    if (typeof (ts as any).clearCachedSources === "function") {
+      (ts as any).clearCachedSources();
+    }
 
     // Create a fresh linter for each call to avoid caching issues
     const linter = new TSESLint.Linter({
@@ -84,8 +89,12 @@ class LegacyESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Clear parser caches to ensure fresh type information
+    // Clear all caches to ensure fresh type information
     parser.clearCaches();
+    // Also clear TypeScript's internal caches if available
+    if (typeof (ts as any).clearCachedSources === "function") {
+      (ts as any).clearCachedSources();
+    }
 
     // Create a fresh linter for each call to avoid caching issues
     const linter = new TSESLint.Linter({
