@@ -48,8 +48,9 @@ describe("default export with options", () => {
       ]
     `);
   });
+  // Uses foo3.ts to avoid caching issues with the previous test that also uses different options
   it("Cannot import package when jsDoc is not declared from sub directory with defaultImportability=private", async () => {
-    const result = await tester.lintFile("src/default-export/foo2.ts", {
+    const result = await tester.lintFile("src/default-export/foo3.ts", {
       jsdoc: {
         defaultImportability: "private",
       },
