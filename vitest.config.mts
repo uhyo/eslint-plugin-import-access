@@ -11,5 +11,12 @@ export default defineConfig({
       printBasicPrototype: true,
     },
     testTimeout: 10000,
+    // Run tests sequentially to avoid projectService caching issues
+    pool: "forks",
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 });
