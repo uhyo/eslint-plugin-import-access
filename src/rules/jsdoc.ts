@@ -304,7 +304,13 @@ function checkSymbol(
   reexport = false,
 ) {
   const checker = program.getTypeChecker();
-  const exsy = checker.getImmediateAliasedSymbol(symbol);
+  // Try getImmediateAliasedSymbol first, fall back to getAliasedSymbol
+  // This fallback helps in certain TypeScript project service edge cases
+  let exsy = checker.getImmediateAliasedSymbol(symbol);
+  if (!exsy) {
+    // Fallback: try getAliasedSymbol which follows the full chain
+    exsy = checker.getAliasedSymbol(symbol);
+  }
   if (!exsy) {
     return;
   }
