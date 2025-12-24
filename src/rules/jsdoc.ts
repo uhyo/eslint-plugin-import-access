@@ -305,7 +305,9 @@ function checkSymbol(
 ) {
   const checker = program.getTypeChecker();
   const exsy = checker.getImmediateAliasedSymbol(symbol);
+  console.log("[DEBUG] checkSymbol called for:", symbol.name, "exsy:", exsy?.name, "moduleSpecifier:", moduleSpecifier);
   if (!exsy) {
+    console.log("[DEBUG] No exsy for symbol:", symbol.name);
     return;
   }
   const checkResult = checkSymbolImportability(

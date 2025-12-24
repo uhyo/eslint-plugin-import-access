@@ -24,15 +24,18 @@ export function checkSymbolImportability(
 ): CheckSymbolResult {
   const rawDecl = exportedSymbol.declarations?.[0];
   if (!rawDecl) {
+    console.log("[DEBUG] No rawDecl for symbol:", exportedSymbol.name);
     return;
   }
   const decl = findExportedDeclaration(rawDecl);
   if (!decl) {
+    console.log("[DEBUG] No decl found for symbol:", exportedSymbol.name);
     return;
   }
 
   // Get the actual file name of the exported declaration
   const exporterFilename = decl.getSourceFile().fileName;
+  console.log("[DEBUG] Checking symbol:", exportedSymbol.name, "from:", exporterFilename, "options:", JSON.stringify(packageOptions));
 
   // Check if moduleSpecifier or exporter file path matches any of the excludeSourcePatterns
   if (packageOptions.excludeSourcePatterns?.length) {
@@ -45,6 +48,7 @@ export function checkSymbolImportability(
       // Check if the file path matches the pattern
       if (minimatch(relativePath, pattern, { dot: true })) {
         // Skip importability check for this source
+        console.log("[DEBUG] Skipping due to excludeSourcePatterns");
         return;
       }
     }
@@ -52,6 +56,7 @@ export function checkSymbolImportability(
 
   // If declaration is from external module, treat as importable
   if (program.isSourceFileFromExternalLibrary(decl.getSourceFile())) {
+    console.log("[DEBUG] Skipping external library:", exporterFilename);
     return;
   }
 
