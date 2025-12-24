@@ -52,7 +52,10 @@ class FlatESLintTester implements ESLintTester {
           parserOptions: {
             ecmaVersion: 2020,
             tsconfigRootDir: this.#projectRoot,
-            projectService: true,
+            projectService: {
+              allowDefaultProject: ["*.ts"],
+              defaultProject: "./tsconfig.json",
+            },
             sourceType: "module",
           },
         },
@@ -103,7 +106,10 @@ class LegacyESLintTester implements ESLintTester {
         parserOptions: {
           ecmaVersion: 2020,
           tsconfigRootDir: this.#projectRoot,
-          projectService: true,
+          projectService: {
+            allowDefaultProject: ["*.ts"],
+            defaultProject: "./tsconfig.json",
+          },
           sourceType: "module",
         },
         rules: {
