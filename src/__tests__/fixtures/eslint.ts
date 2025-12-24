@@ -52,7 +52,7 @@ class FlatESLintTester implements ESLintTester {
           parserOptions: {
             ecmaVersion: 2020,
             tsconfigRootDir: this.#projectRoot,
-            projectService: true,
+            project: "./tsconfig.json",
             sourceType: "module",
           },
         },
