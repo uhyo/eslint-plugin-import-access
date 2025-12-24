@@ -46,3 +46,4 @@ jobs:
       - run: npm test
         env:
           TEST_FLAT_CONFIG: ${{ matrix.flat-config }}
+          NODE_OPTIONS: --no-compilation-cache
