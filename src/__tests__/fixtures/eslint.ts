@@ -34,6 +34,9 @@ class FlatESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
+    // Clear parser caches to ensure fresh type information
+    parser.clearCaches();
+
     // Create a fresh linter for each call to avoid caching issues
     const linter = new TSESLint.Linter({
       cwd: this.#projectRoot,
@@ -80,6 +83,9 @@ class LegacyESLintTester implements ESLintTester {
     const code = await readFile(fileAbsolutePath, {
       encoding: "utf8",
     });
+
+    // Clear parser caches to ensure fresh type information
+    parser.clearCaches();
 
     // Create a fresh linter for each call to avoid caching issues
     const linter = new TSESLint.Linter({
