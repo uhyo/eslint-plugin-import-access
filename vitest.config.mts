@@ -11,14 +11,5 @@ export default defineConfig({
       printBasicPrototype: true,
     },
     testTimeout: 30000,
-    // Run tests sequentially and isolated to avoid projectService caching issues
-    fileParallelism: false,
-    isolate: true,
-    pool: "forks",
-    poolOptions: {
-      forks: {
-        isolate: true,
-      },
-    },
   },
 });

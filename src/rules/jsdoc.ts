@@ -306,14 +306,6 @@ function checkSymbol(
   const checker = program.getTypeChecker();
   const exsy = checker.getImmediateAliasedSymbol(symbol);
   if (!exsy) {
-    // Debug logging for CI
-    if (process.env.CI) {
-      console.log("[DEBUG] getImmediateAliasedSymbol returned undefined");
-      console.log("[DEBUG] symbol.name:", symbol.name);
-      console.log("[DEBUG] symbol.flags:", symbol.flags);
-      console.log("[DEBUG] moduleSpecifier:", moduleSpecifier);
-      console.log("[DEBUG] sourceFile:", tsNode.getSourceFile().fileName);
-    }
     return;
   }
   const checkResult = checkSymbolImportability(
