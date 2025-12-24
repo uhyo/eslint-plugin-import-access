@@ -127,15 +127,16 @@ class LegacyESLintTester implements ESLintTester {
 }
 
 const flatConfig = !!process.env.TEST_FLAT_CONFIG;
-let cache: ESLintTester | undefined;
 /**
  * get an ESLint instance for testing.
+ * Creates a fresh instance each time to avoid any caching issues
+ * that can occur with different TypeScript/ESLint version combinations.
  */
 export function getESLintTester(): ESLintTester {
   const projectRoot = path.resolve(__dirname, "project");
   if (flatConfig) {
-    return (cache ||= new FlatESLintTester(projectRoot));
+    return new FlatESLintTester(projectRoot);
   } else {
-    return (cache ||= new LegacyESLintTester(projectRoot));
+    return new LegacyESLintTester(projectRoot);
   }
 }
