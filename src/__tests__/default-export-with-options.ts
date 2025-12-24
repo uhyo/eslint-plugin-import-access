@@ -3,8 +3,9 @@ import { getESLintTester } from "./fixtures/eslint";
 const tester = getESLintTester();
 
 describe("default export with options", () => {
+  // Uses foo2.ts (duplicate of foo.ts) to avoid caching issues when same file is linted with different options
   it("Cannot import package when jsDoc is not declared from sub directory with defaultImportability=package", async () => {
-    const result = await tester.lintFile("src/default-export/foo.ts", {
+    const result = await tester.lintFile("src/default-export/foo2.ts", {
       jsdoc: {
         defaultImportability: "package",
       },
@@ -48,7 +49,7 @@ describe("default export with options", () => {
     `);
   });
   it("Cannot import package when jsDoc is not declared from sub directory with defaultImportability=private", async () => {
-    const result = await tester.lintFile("src/default-export/foo.ts", {
+    const result = await tester.lintFile("src/default-export/foo2.ts", {
       jsdoc: {
         defaultImportability: "private",
       },

@@ -2,9 +2,11 @@ import { getESLintTester } from "./fixtures/eslint";
 
 const tester = getESLintTester();
 
+// Uses duplicate files (useFoo2.ts, reexportFromSubIndex2.ts) to avoid caching issues
+// when same file is linted with different options
 describe("reexports indexLoophole = false", () => {
   it("Cannot import a package-private variable from sub/index.ts", async () => {
-    const result = await tester.lintFile("src/reexport/useFoo.ts", {
+    const result = await tester.lintFile("src/reexport/useFoo2.ts", {
       jsdoc: {
         indexLoophole: false,
       },
@@ -38,7 +40,7 @@ Array [
   });
   it("Cannot re-export a package-private variable", async () => {
     const result = await tester.lintFile(
-      "src/reexport4/indexLoophole/reexportFromSubIndex.ts",
+      "src/reexport4/indexLoophole/reexportFromSubIndex2.ts",
       {
         jsdoc: {
           indexLoophole: false,

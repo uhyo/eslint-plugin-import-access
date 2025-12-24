@@ -2,6 +2,7 @@ import { getESLintTester } from "./fixtures/eslint";
 
 const tester = getESLintTester();
 
+// Uses user2.ts (duplicate of user.ts) to avoid caching issues when same file is linted with different options
 describe("packageDirectory option - all directories as packages", () => {
   const allPackagesOption = {
     jsdoc: {
@@ -11,7 +12,7 @@ describe("packageDirectory option - all directories as packages", () => {
 
   it("Cannot import from _internal subdirectory (all dirs are packages)", async () => {
     const result = await tester.lintFile(
-      "src/package-directory/user.ts",
+      "src/package-directory/user2.ts",
       allPackagesOption,
     );
     expect(result).toMatchInlineSnapshot(`

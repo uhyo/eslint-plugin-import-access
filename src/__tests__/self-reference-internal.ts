@@ -2,8 +2,9 @@ import { getESLintTester } from "./fixtures/eslint";
 
 const tester = getESLintTester();
 
+// Uses user2.ts (duplicate of user.ts) to avoid caching issues when same file is linted with different options
 it("Self-reference via package.json exports is treated as internal when treatSelfReferenceAs: internal", async () => {
-  const result = await tester.lintFile("src/self-reference/user.ts", {
+  const result = await tester.lintFile("src/self-reference/user2.ts", {
     jsdoc: {
       defaultImportability: "private",
       treatSelfReferenceAs: "internal",
