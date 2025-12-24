@@ -46,6 +46,9 @@ class FlatESLintTester implements ESLintTester {
         languageOptions: {
           parser,
           parserOptions: {
+            // When linting the same file multiple times with one tester interface,
+            // the single run needs to be disabled for some reason.
+            disallowAutomaticSingleRunInference: true,
             ecmaVersion: 2020,
             tsconfigRootDir: this.#projectRoot,
             projectService: true,
@@ -94,6 +97,9 @@ class LegacyESLintTester implements ESLintTester {
       {
         parser: "@typescript-eslint/parser",
         parserOptions: {
+          // When linting the same file multiple times with one tester interface,
+          // the single run needs to be disabled for some reason.
+          disallowAutomaticSingleRunInference: true,
           ecmaVersion: 2020,
           tsconfigRootDir: this.#projectRoot,
           projectService: true,
