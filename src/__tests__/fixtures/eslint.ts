@@ -2,6 +2,7 @@ import * as parser from "@typescript-eslint/parser";
 import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
+import { Program } from "typescript";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
 const flatPlugin = {
@@ -22,8 +23,15 @@ interface ESLintTester {
 
 class FlatESLintTester implements ESLintTester {
   #projectRoot: string;
+  #linter: TSESLint.Linter;
+  #program: Program;
   constructor(projectRoot: string) {
     this.#projectRoot = projectRoot;
+    this.#linter = new TSESLint.Linter({
+      cwd: this.#projectRoot,
+      configType: "flat",
+    });
+    this.#program = parser.createProgram("./tsconfig.json", projectRoot);
   }
   async lintFile(
     filePath: string,
@@ -34,13 +42,7 @@ class FlatESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Create a new Linter for each call to avoid caching issues with projectService
-    const linter = new TSESLint.Linter({
-      cwd: this.#projectRoot,
-      configType: "flat",
-    });
-
-    return linter.verify(
+    return this.#linter.verify(
       code,
       {
         files: ["**/*.ts"],
@@ -51,6 +53,7 @@ class FlatESLintTester implements ESLintTester {
             tsconfigRootDir: this.#projectRoot,
             projectService: true,
             sourceType: "module",
+            program: this.#program,
           },
         },
         plugins: {
@@ -69,8 +72,19 @@ class FlatESLintTester implements ESLintTester {
 
 class LegacyESLintTester implements ESLintTester {
   #projectRoot: string;
+  #linter: TSESLint.Linter;
+  #program: Program;
   constructor(projectRoot: string) {
     this.#projectRoot = projectRoot;
+    this.#linter = new TSESLint.Linter({
+      cwd: this.#projectRoot,
+      configType: "eslintrc",
+    });
+    this.#program = parser.createProgram("./tsconfig.json", projectRoot);
+
+    this.#linter.defineParser("@typescript-eslint/parser", parser);
+
+    this.#linter.defineRule("import-access/jsdoc", jsdocRule);
   }
   async lintFile(
     filePath: string,
@@ -81,15 +95,7 @@ class LegacyESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Create a new Linter for each call to avoid caching issues with projectService
-    const linter = new TSESLint.Linter({
-      cwd: this.#projectRoot,
-      configType: "eslintrc",
-    });
-    linter.defineParser("@typescript-eslint/parser", parser);
-    linter.defineRule("import-access/jsdoc", jsdocRule);
-
-    return linter.verify(
+    return this.#linter.verify(
       code,
       {
         parser: "@typescript-eslint/parser",
@@ -98,6 +104,7 @@ class LegacyESLintTester implements ESLintTester {
           tsconfigRootDir: this.#projectRoot,
           projectService: true,
           sourceType: "module",
+          program: this.#program,
         },
         rules: {
           "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
