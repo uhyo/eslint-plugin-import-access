@@ -2,7 +2,6 @@ import * as parser from "@typescript-eslint/parser";
 import { TSESLint } from "@typescript-eslint/utils";
 import { readFile } from "fs/promises";
 import path from "path";
-import * as ts from "typescript";
 import jsdocRule, { JSDocRuleOptions } from "../../rules/jsdoc";
 
 const flatPlugin = {
@@ -23,8 +22,13 @@ interface ESLintTester {
 
 class FlatESLintTester implements ESLintTester {
   #projectRoot: string;
+  #linter: TSESLint.Linter;
   constructor(projectRoot: string) {
     this.#projectRoot = projectRoot;
+    this.#linter = new TSESLint.Linter({
+      cwd: projectRoot,
+      configType: "flat",
+    });
   }
   async lintFile(
     filePath: string,
@@ -35,20 +39,7 @@ class FlatESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Clear all caches to ensure fresh type information
-    parser.clearCaches();
-    // Also clear TypeScript's internal caches if available
-    if (typeof (ts as any).clearCachedSources === "function") {
-      (ts as any).clearCachedSources();
-    }
-
-    // Create a fresh linter for each call to avoid caching issues
-    const linter = new TSESLint.Linter({
-      cwd: this.#projectRoot,
-      configType: "flat",
-    });
-
-    return linter.verify(
+    return this.#linter.verify(
       code,
       {
         files: ["**/*.ts"],
@@ -77,8 +68,15 @@ class FlatESLintTester implements ESLintTester {
 
 class LegacyESLintTester implements ESLintTester {
   #projectRoot: string;
+  #linter: TSESLint.Linter;
   constructor(projectRoot: string) {
     this.#projectRoot = projectRoot;
+    this.#linter = new TSESLint.Linter({
+      cwd: projectRoot,
+      configType: "eslintrc",
+    });
+    this.#linter.defineParser("@typescript-eslint/parser", parser);
+    this.#linter.defineRule("import-access/jsdoc", jsdocRule);
   }
   async lintFile(
     filePath: string,
@@ -89,23 +87,7 @@ class LegacyESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    // Clear all caches to ensure fresh type information
-    parser.clearCaches();
-    // Also clear TypeScript's internal caches if available
-    if (typeof (ts as any).clearCachedSources === "function") {
-      (ts as any).clearCachedSources();
-    }
-
-    // Create a fresh linter for each call to avoid caching issues
-    const linter = new TSESLint.Linter({
-      cwd: this.#projectRoot,
-      configType: "eslintrc",
-    });
-
-    linter.defineParser("@typescript-eslint/parser", parser);
-    linter.defineRule("import-access/jsdoc", jsdocRule);
-
-    return linter.verify(
+    return this.#linter.verify(
       code,
       {
         parser: "@typescript-eslint/parser",
@@ -127,16 +109,15 @@ class LegacyESLintTester implements ESLintTester {
 }
 
 const flatConfig = !!process.env.TEST_FLAT_CONFIG;
+let cache: ESLintTester | undefined;
 /**
  * get an ESLint instance for testing.
- * Creates a fresh instance each time to avoid any caching issues
- * that can occur with different TypeScript/ESLint version combinations.
  */
 export function getESLintTester(): ESLintTester {
   const projectRoot = path.resolve(__dirname, "project");
   if (flatConfig) {
-    return new FlatESLintTester(projectRoot);
+    return (cache ||= new FlatESLintTester(projectRoot));
   } else {
-    return new LegacyESLintTester(projectRoot);
+    return (cache ||= new LegacyESLintTester(projectRoot));
   }
 }
