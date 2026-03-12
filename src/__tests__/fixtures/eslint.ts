@@ -27,6 +27,7 @@ class FlatESLintTester implements ESLintTester {
     this.#projectRoot = projectRoot;
     this.#linter = new TSESLint.Linter({
       cwd: this.#projectRoot,
+      configType: "flat",
     });
   }
   async lintFile(
@@ -68,11 +69,63 @@ class FlatESLintTester implements ESLintTester {
   }
 }
 
+class LegacyESLintTester implements ESLintTester {
+  #projectRoot: string;
+  #linter: TSESLint.Linter;
+  constructor(projectRoot: string) {
+    this.#projectRoot = projectRoot;
+    this.#linter = new TSESLint.Linter({
+      cwd: this.#projectRoot,
+      configType: "eslintrc",
+    });
+
+    this.#linter.defineParser("@typescript-eslint/parser", parser as any);
+
+    this.#linter.defineRule("import-access/jsdoc", jsdocRule as any);
+  }
+  async lintFile(
+    filePath: string,
+    rules?: Partial<{ jsdoc: Partial<JSDocRuleOptions> }>,
+  ) {
+    const fileAbsolutePath = path.join(this.#projectRoot, filePath);
+    const code = await readFile(fileAbsolutePath, {
+      encoding: "utf8",
+    });
+
+    return this.#linter.verify(
+      code,
+      {
+        parser: "@typescript-eslint/parser",
+        parserOptions: {
+          // When linting the same file multiple times with one tester interface,
+          // the single run needs to be disabled for some reason.
+          disallowAutomaticSingleRunInference: true,
+          ecmaVersion: 2020,
+          tsconfigRootDir: this.#projectRoot,
+          projectService: true,
+          sourceType: "module",
+        },
+        rules: {
+          "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
+        },
+      },
+      {
+        filename: fileAbsolutePath,
+      },
+    );
+  }
+}
+
+const flatConfig = !!process.env.TEST_FLAT_CONFIG;
 let cache: ESLintTester | undefined;
 /**
  * get an ESLint instance for testing.
  */
 export function getESLintTester(): ESLintTester {
   const projectRoot = path.resolve(__dirname, "project");
-  return (cache ||= new FlatESLintTester(projectRoot));
+  if (flatConfig) {
+    return (cache ||= new FlatESLintTester(projectRoot));
+  } else {
+    return (cache ||= new LegacyESLintTester(projectRoot));
+  }
 }
