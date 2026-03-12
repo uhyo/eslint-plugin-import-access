@@ -10,6 +10,17 @@ const flatPlugin = {
   },
 };
 
+/**
+ * Strip version-dependent properties from lint messages so that
+ * inline snapshots are consistent across ESLint 8, 9, and 10.
+ * `nodeType` was deprecated in ESLint 9 and removed in ESLint 10.
+ */
+function normalizeLintMessages(
+  messages: TSESLint.Linter.LintMessage[],
+): TSESLint.Linter.LintMessage[] {
+  return messages.map(({ nodeType, ...rest }) => rest) as TSESLint.Linter.LintMessage[];
+}
+
 interface ESLintTester {
   /**
    * Lint file in the project (relative to project root).
@@ -39,32 +50,34 @@ class FlatESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    return this.#linter.verify(
-      code,
-      {
-        files: ["**/*.ts"],
-        languageOptions: {
-          parser,
-          parserOptions: {
-            // When linting the same file multiple times with one tester interface,
-            // the single run needs to be disabled for some reason.
-            disallowAutomaticSingleRunInference: true,
-            ecmaVersion: 2020,
-            tsconfigRootDir: this.#projectRoot,
-            projectService: true,
-            sourceType: "module",
+    return normalizeLintMessages(
+      this.#linter.verify(
+        code,
+        {
+          files: ["**/*.ts"],
+          languageOptions: {
+            parser,
+            parserOptions: {
+              // When linting the same file multiple times with one tester interface,
+              // the single run needs to be disabled for some reason.
+              disallowAutomaticSingleRunInference: true,
+              ecmaVersion: 2020,
+              tsconfigRootDir: this.#projectRoot,
+              projectService: true,
+              sourceType: "module",
+            },
+          },
+          plugins: {
+            "import-access": flatPlugin,
+          },
+          rules: {
+            "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
           },
         },
-        plugins: {
-          "import-access": flatPlugin,
+        {
+          filename: fileAbsolutePath,
         },
-        rules: {
-          "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
-        },
-      },
-      {
-        filename: fileAbsolutePath,
-      },
+      ),
     );
   }
 }
@@ -92,26 +105,28 @@ class LegacyESLintTester implements ESLintTester {
       encoding: "utf8",
     });
 
-    return this.#linter.verify(
-      code,
-      {
-        parser: "@typescript-eslint/parser",
-        parserOptions: {
-          // When linting the same file multiple times with one tester interface,
-          // the single run needs to be disabled for some reason.
-          disallowAutomaticSingleRunInference: true,
-          ecmaVersion: 2020,
-          tsconfigRootDir: this.#projectRoot,
-          projectService: true,
-          sourceType: "module",
+    return normalizeLintMessages(
+      this.#linter.verify(
+        code,
+        {
+          parser: "@typescript-eslint/parser",
+          parserOptions: {
+            // When linting the same file multiple times with one tester interface,
+            // the single run needs to be disabled for some reason.
+            disallowAutomaticSingleRunInference: true,
+            ecmaVersion: 2020,
+            tsconfigRootDir: this.#projectRoot,
+            projectService: true,
+            sourceType: "module",
+          },
+          rules: {
+            "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
+          },
         },
-        rules: {
-          "import-access/jsdoc": ["error", rules?.jsdoc ?? {}],
+        {
+          filename: fileAbsolutePath,
         },
-      },
-      {
-        filename: fileAbsolutePath,
-      },
+      ),
     );
   }
 }
