@@ -9,20 +9,19 @@ describe("packageDirectory option", () => {
         "src/package-directory/user.ts",
       );
       expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 24,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'internalHelper'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 24,
+            "endLine": 1,
+            "line": 1,
+            "message": "Cannot import a package-private export 'internalHelper'",
+            "messageId": "package",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
     });
 
     it("Cannot import from sub/_internal subdirectory", async () => {
@@ -30,20 +29,19 @@ Array [
         "src/package-directory/sub/subUser.ts",
       );
       expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 27,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'subInternalHelper'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 27,
+            "endLine": 1,
+            "line": 1,
+            "message": "Cannot import a package-private export 'subInternalHelper'",
+            "messageId": "package",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
     });
   });
 
@@ -84,20 +82,19 @@ Array [
         packageDirectoryOption,
       );
       expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 27,
-    "endLine": 3,
-    "line": 3,
-    "message": "Cannot import a package-private export 'subInternalHelper'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 27,
+            "endLine": 3,
+            "line": 3,
+            "message": "Cannot import a package-private export 'subInternalHelper'",
+            "messageId": "package",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
     });
   });
 
@@ -114,20 +111,19 @@ Array [
         allPackagesOption,
       );
       expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 24,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'internalHelper'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 24,
+            "endLine": 1,
+            "line": 1,
+            "message": "Cannot import a package-private export 'internalHelper'",
+            "messageId": "package",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
     });
   });
 
@@ -169,20 +165,19 @@ Array [
         packagesOption,
       );
       expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 24,
-    "endLine": 2,
-    "line": 2,
-    "message": "Cannot import a package-private export 'packageAHelper'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+        Array [
+          Object {
+            "column": 10,
+            "endColumn": 24,
+            "endLine": 2,
+            "line": 2,
+            "message": "Cannot import a package-private export 'packageAHelper'",
+            "messageId": "package",
+            "ruleId": "import-access/jsdoc",
+            "severity": 2,
+          },
+        ]
+      `);
     });
   });
 });

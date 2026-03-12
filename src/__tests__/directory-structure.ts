@@ -8,20 +8,19 @@ describe("directory structure", () => {
       "src/directory-structure/subsubUser.ts",
     );
     expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 19,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'subsubVar'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+      Array [
+        Object {
+          "column": 10,
+          "endColumn": 19,
+          "endLine": 1,
+          "line": 1,
+          "message": "Cannot import a package-private export 'subsubVar'",
+          "messageId": "package",
+          "ruleId": "import-access/jsdoc",
+          "severity": 2,
+        },
+      ]
+    `);
   });
   it("Can import from sub/index.ts", async () => {
     const result = await tester.lintFile(
@@ -40,19 +39,18 @@ Array [
       "src/directory-structure/sub/sub3/siblingUser.ts",
     );
     expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 19,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a package-private export 'subsubVar'",
-    "messageId": "package",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+      Array [
+        Object {
+          "column": 10,
+          "endColumn": 19,
+          "endLine": 1,
+          "line": 1,
+          "message": "Cannot import a package-private export 'subsubVar'",
+          "messageId": "package",
+          "ruleId": "import-access/jsdoc",
+          "severity": 2,
+        },
+      ]
+    `);
   });
 });

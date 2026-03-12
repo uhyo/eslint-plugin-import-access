@@ -34,7 +34,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@typescript-eslint/utils": "^8.4.0",
+    "@typescript-eslint/utils": "^8.57.0",
     "minimatch": "^10.0.1",
     "tsutils": "^3.21.0"
   },
@@ -42,6 +42,7 @@
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
+    "@eslint/js": "^10.0.1",
     "@fixture-package-third-party/has-sub-module": "file:src/__tests__/fixtures/packages/third-party/has-sub-module",
     "@fixture-package-third-party/missing-entrypoint": "file:src/__tests__/fixtures/packages/third-party/missing-entrypoint",
     "@fixture-package-third-party/with-exports-field": "file:src/__tests__/fixtures/packages/third-party/with-exports-field",
@@ -49,15 +50,16 @@
     "@fixture-package-workspace/missing-entrypoint": "*",
     "@fixture-package-workspace/with-exports-field": "*",
     "@types/node": "24.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.4.0",
-    "@typescript-eslint/parser": "^8.4.0",
-    "@typescript-eslint/typescript-estree": "^8.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "@typescript-eslint/typescript-estree": "^8.57.0",
+    "@typescript-eslint/utils": "^8.57.0",
     "@vitest/expect": "^4.0.4",
-    "eslint": "^9.28.0",
+    "eslint": "^10.0.3",
     "eslint-plugin-local-rules": "^3.0.2",
     "prettier": "^3.2.5",
     "typescript": "^5.1.6",
-    "typescript-eslint": "^8.4.0",
+    "typescript-eslint": "^8.57.0",
     "vitest": "^4.0.5"
   },
   "workspaces": [

@@ -19,20 +19,19 @@ it("Self-reference via package.json exports is treated as internal when treatSel
     },
   });
   expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "column": 10,
-    "endColumn": 23,
-    "endLine": 1,
-    "line": 1,
-    "message": "Cannot import a private export 'exportedValue'",
-    "messageId": "private",
-    "nodeType": "ImportSpecifier",
-    "ruleId": "import-access/jsdoc",
-    "severity": 2,
-  },
-]
-`);
+    Array [
+      Object {
+        "column": 10,
+        "endColumn": 23,
+        "endLine": 1,
+        "line": 1,
+        "message": "Cannot import a private export 'exportedValue'",
+        "messageId": "private",
+        "ruleId": "import-access/jsdoc",
+        "severity": 2,
+      },
+    ]
+  `);
 });
 
 it("Self-reference via package.json exports is treated as external when treatSelfReferenceAs: external", async () => {
