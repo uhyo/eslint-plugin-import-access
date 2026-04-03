@@ -56,6 +56,8 @@ The plugin supports several options via the JSDoc rule:
 
 Tests are located in `src/__tests__/` with extensive fixture packages in `src/__tests__/fixtures/packages/` and `src/__tests__/fixtures/project/`. The test suite uses Vitest and includes both workspace and third-party package scenarios.
 
+**Important:** `src/__tests__/fixtures/eslint.ts` contains both `FlatESLintTester` and `LegacyESLintTester`. Do NOT remove the `LegacyESLintTester` — CI tests against ESLint 8, which only supports the legacy eslintrc config format. The `TEST_FLAT_CONFIG` env var controls which tester is used.
+
 ### Build Outputs
 
 The plugin exports multiple entry points:
