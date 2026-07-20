@@ -1,5 +1,8 @@
 # eslint-plugin-import-access
 
+> [!NOTE]
+> **Migrating away from ESLint?** Try [ImportLint](https://github.com/uhyo/import-lint), an official port of this plugin into a standalone CLI linter. ImportLint is compatible with this plugin and is very fast.
+
 ## What?
 
 This package provides a [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) rule that restricts importing variables marked as `@package` from a file outside the same directory. Also, this package serves as a TypeScript Language Service Plugin that prevents auto-completion of such imports.
