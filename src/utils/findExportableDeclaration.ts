@@ -1,9 +1,11 @@
 import {
   isClassDeclaration,
+  isEnumDeclaration,
   isExportAssignment,
   isExportDeclaration,
   isFunctionDeclaration,
   isInterfaceDeclaration,
+  isModuleDeclaration,
   isSourceFile,
   isTypeAliasDeclaration,
   isVariableStatement,
@@ -39,7 +41,9 @@ function findExportableDeclaration(node: Node) {
       isExportDeclaration(node) ||
       isExportAssignment(node) ||
       isTypeAliasDeclaration(node) ||
-      isInterfaceDeclaration(node)
+      isInterfaceDeclaration(node) ||
+      isEnumDeclaration(node) ||
+      isModuleDeclaration(node)
     ) {
       return node;
     }
