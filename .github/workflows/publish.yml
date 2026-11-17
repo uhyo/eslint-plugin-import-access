@@ -16,6 +16,9 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+        env:
+          # The devDependency ESLint (v10+) only supports flat config
+          TEST_FLAT_CONFIG: "true"
       - name: Publish to npm (pre-release beta)
         if: ${{ github.event.release.prerelease }}
         uses: JS-DevTools/npm-publish@v4
