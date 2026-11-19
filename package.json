@@ -30,7 +30,7 @@
   "author": "uhyo <uhyo@uhy.ooo>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uhyo/eslint-plugin-import-access"
+    "url": "git+https://github.com/uhyo/eslint-plugin-import-access.git"
   },
   "license": "MIT",
   "dependencies": {
